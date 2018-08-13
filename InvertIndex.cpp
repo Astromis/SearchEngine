@@ -2,6 +2,12 @@
 
 mutex mut;
 
+
+//TODO: Correct multiintersect
+// basic ranking
+// saving data
+// make tokenization (boost?)
+
 InvertIndex::InvertIndex(string path, string ext)
 {
     pathfolder = path;
@@ -115,22 +121,25 @@ bool InvertIndex::get_word_position_map(word_position_map *response, string &qua
 
 bool InvertIndex::intersect(vector<string> &result, string q1, string q2)
 {
+    // return false if no result for one of the quary
     word_position_map p1 = index[q1];
     word_position_map p2 = index[q2];
+    if(p1.empty() || p2.empty()) return false;
     word_position_map::iterator it1 = p1.begin();
-    word_position_map::iterator it2 = p1.begin();
+    word_position_map::iterator it2 = p2.begin();
     while(it1 != p1.end() && it2 != p2.end())
     {
-        if(it1->second == it2->second)
+        if(it1->first == it2->first)
         {
             result.push_back(it1->first);
             it1++;
             it2++;
         }
-        else if(it1->second < it2->second)
+        else if(it1->first < it2->first)
                 it1++;
         else it2++;
     }
+    cout<< count;
     return true;
 }
 /* 
@@ -154,8 +163,12 @@ bool InvertIndex::MultipleIntersect(vector<string> *result, vector<string> quary
 vector<string> InvertIndex::operator[](string q)
 {
     vector<string> resp;
-    //word_position_map tmp = index[q];
+    if(index.find(q) == index.end()) return vector<string>();
     for(auto& it: index[q])
         resp.push_back(it.first);
     return resp;
 }
+
+
+
+
