@@ -13,6 +13,7 @@
 #include <queue>
 #include <thread>
 #include <mutex>
+#include <math.h>
 
 using namespace std;
 
@@ -42,7 +43,12 @@ class InvertIndex
         //utils
         int getdir (string ext, string dir, vector<string> &files, queue<string> &dirs);
         bool get_dirs(const string ext, const string start_dir, vector<string> &files);
-    
+
+        size_t get_tf(string  word_instance, string doc_instance);
+        float get_idf(string word_instance);
+        float get_tf_idf(string word,string document);
+        int ranking(string quary);
+
         vector<string> operator[](string q);
     protected:
 
@@ -50,6 +56,8 @@ class InvertIndex
         inverted_list index;
         string pathfolder;
         string extention;
+
+        long document_count;
 };
 
 #endif // INVERTINDEX_H

@@ -3,8 +3,10 @@
 mutex mut;
 
 
-//TODO: Correct multiintersect
-// basic ranking
+//TODO: 
+// Correct multiintersect
+// develop BM25
+// reconstruct data structure in oreder to have possibility of sorting with in-built methods
 // saving data
 // make tokenization (boost?)
 
@@ -22,9 +24,10 @@ InvertIndex::~InvertIndex()
 
 bool InvertIndex::build_index()
 {
-    vector<string> f;
+    doc_list f;
     get_dirs(extention ,pathfolder, f);
-    for (unsigned int i = 0;i < f.size();i++)
+    document_count = f.size();
+    for (unsigned int i = 0;i < document_count;i++)
     {
         ifstream in;
         in.open(f[i].c_str(), ifstream::in);
@@ -139,7 +142,7 @@ bool InvertIndex::intersect(vector<string> &result, string q1, string q2)
                 it1++;
         else it2++;
     }
-    cout<< count;
+    //cout<< count;
     return true;
 }
 /* 
@@ -170,5 +173,34 @@ vector<string> InvertIndex::operator[](string q)
 }
 
 
+size_t InvertIndex::get_tf(string  word_instance, string doc_instance)
+{
+    size_t tf = index[word_instance][doc_instance].size();
+    
+    return tf;
+}
 
+float InvertIndex::get_idf(string word_instance)
+{
+    int size = index[word_instance].size();
+    return log(document_count/size);
 
+}
+
+float InvertIndex::get_tf_idf(string word,string document)
+{
+    return get_tf(word, document) / get_idf(word);
+}
+
+int BM25()
+{
+
+}
+
+int InvertIndex::ranking(string quary)
+{
+    word_position_map docs = index[quary];
+    for(auto doc: docs)
+        cout<<"For document "<<doc.first<<" TF-IDF is "<<get_tf_idf(quary, doc.first)<<endl;
+    return 0;
+}
