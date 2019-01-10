@@ -1,11 +1,14 @@
 #include "InvertIndex.h"
+#include <algorithm>
+#include <utility>
+#include <set>
 
 mutex mut;
 
 
 //TODO: 
 // Correct multiintersect
-// debug BM25
+//  reconstruct minor intersect otherwise multiintersect won't word
 // reconstruct data structure in order to have possibility of sorting with in-built methods
 // saving data
 // make tokenization (boost?)
@@ -151,23 +154,41 @@ bool InvertIndex::intersect(vector<string> &result, string q1, string q2)
     //cout<< count;
     return true;
 }
-/* 
-bool InvertIndex::MultipleIntersect(vector<string> *result, vector<string> quary)
+ 
+bool InvertIndex::MultipleIntersect(vector<string> quary)
 {
+    set<string> result;
     //sort vector by increasing frequency
-    word_position_map temp_map;
-    vector<string> cycle_temp_map;
-    *result = index[quary.back()];
-    quary.pop_back();
-    word_position_map::iterator it = temp_map.begin();
+    auto comp = [this](string first, string second)
+    {
+        return get_tf(first) > get_tf(second);
+    };
+    sort(quary.begin(), quary.end(), comp);
+    for(auto i: quary)
+        cout<<i<< " " << get_tf(i)<<endl;
+    // word_position_map temp_map;
+    // vector<string> cycle_temp_map;
+
+    for(auto& i: quary)
+    {
+        for(auto& j: index[quary.back()])
+            result.insert(j.first);
+        quary.pop_back();
+    }
+
+    for(auto i: result)
+        cout<<i<<endl;
+
+/*     word_position_map::iterator it = temp_map.begin();
     while(quary.size() != 0 && it != temp_map.end())
     {
         temp_map = index[quary.back()];
-        InvertIndex::intersect(&cycle_temp_map, result, &temp_map)
-        (*result).insert(cycle_temp_map.begin(), cycle_temp_map.end());
+        //intersect(&cycle_temp_map, result, &temp_map);
+        result.insert(cycle_temp_map.begin(), result.end());
         quary.pop_back();
-    }
-} */
+    } */
+    return true;
+} 
 
 vector<string> InvertIndex::operator[](string q)
 {
@@ -179,7 +200,7 @@ vector<string> InvertIndex::operator[](string q)
 }
 
 
-size_t InvertIndex::get_tf(string  word_instance, string doc_instance)
+size_t InvertIndex::get_tfd(string  word_instance, string doc_instance)
 {
     size_t tf = index[word_instance][doc_instance].size();
     
@@ -196,20 +217,32 @@ float InvertIndex::get_idf(string word_instance)
 float InvertIndex::get_smoothed_idf(string word_instance)
 {
     int size = index[word_instance].size();
-    return log( (document_count - size + 0.5)/ (size + 0.5) );
+    cout<<"Size: "<<size<<endl;
+    return log( (document_count - size + 0.5) / (size + 0.5) );
 }
 
 float InvertIndex::get_tf_idf(string word,string document)
 {
-    return get_tf(word, document) / get_idf(word);
+    return get_tfd(word, document) / get_idf(word);
+}
+
+float InvertIndex::get_tf(string word)
+{
+    // It is not a good idea. 
+    // Mannig said that this number should be precomputed and is being kept in the memory.
+    word_position_map temp = index[word];
+    float freq = 0;
+    for(auto& inst: temp)
+        freq += inst.second.size();
+    return freq;
 }
 
 float InvertIndex::BM25(string word, string document)
 {
-    float k = 0;
+    float k = 2;
     float b = 0.75;
-    float numerator = this->get_tf(word, document) * (k + 1) * this->get_idf(word);
-    float denumenator = this->get_tf(word, document) + k * (1 - b  + b * doc_length[document] / average_doc_length);
+    float numerator = get_tfd(word, document) * (k + 1) * get_idf(word);
+    float denumenator =  get_tfd(word, document) + k * (1 - b  + b * doc_length[document] / average_doc_length);
     return numerator / denumenator;
 }
 
@@ -226,7 +259,22 @@ float InvertIndex::BM25(vector<string> word, string document)
 int InvertIndex::ranking(string quary)
 {
     word_position_map docs = index[quary];
+    vector< pair<float, string> > result;
+    pair<float, string> temp;
+
     for(auto doc: docs)
-        cout<<"For document "<<doc.first<<" TF-IDF is "<<get_tf_idf(quary, doc.first)<<endl;
+        // getting of idf for each word should be obtained here because of high computational cost
+        {
+            result.push_back(make_pair(BM25(quary, doc.first), doc.first));
+        }
+
+    sort(result.begin(), result.end());
+    for(vector< pair<float, string> >::iterator it=result.begin(); it != result.end(); it++)
+        cout<<it->second<<" "<<it->first<<endl;
     return 0;
+}
+
+int InvertIndex::ranking(vector<string> quary)
+{
+
 }

@@ -10,7 +10,8 @@ int main(int argc, char **argv)
     InvertIndex inv(string(argv[1]), string(".h"));
     inv.build_index();
     vector<string> res;
-    inv.ranking("#include");
+    inv.MultipleIntersect(vector<string> {"#include", "int", "float", "Optimization", "fdsf"});
+    //inv.ranking("#include");
     //inv.intersect(res, "int", "#include");
 /*     cout<<"TF: "<< inv.get_tf("#include", "codec.h")<< endl;
     cout<<"IDF: "<< inv.get_idf("#include")<< endl;
