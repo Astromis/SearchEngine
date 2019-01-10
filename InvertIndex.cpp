@@ -5,8 +5,8 @@ mutex mut;
 
 //TODO: 
 // Correct multiintersect
-// develop BM25
-// reconstruct data structure in oreder to have possibility of sorting with in-built methods
+// debug BM25
+// reconstruct data structure in order to have possibility of sorting with in-built methods
 // saving data
 // make tokenization (boost?)
 
@@ -32,15 +32,21 @@ bool InvertIndex::build_index()
         ifstream in;
         in.open(f[i].c_str(), ifstream::in);
         string word;
-
+        int word_count = 0;
         while (in >> word)
         {
             //add conditions, that cut all
             mut.lock();
             index[word][f[i].c_str()].push_back((int)(in.tellg()) - (word.length()));
             mut.unlock();
+            word_count++;
         }
+        doc_length[f[i].c_str()] = word_count;
+        average_doc_length += word_count;
+        word_count = 0;
     }
+    average_doc_length /= document_count;
+
     cout<<"Indexing complete in thread id "<<this_thread::get_id()<<". Size: "<< index.size()<<endl;   
     return true;
 }
@@ -72,7 +78,7 @@ int InvertIndex::getdir (const string ext, const string dir, vector<string> &fil
 
             dirs.push(dir+"/"+string(dirp->d_name));
         else
-        //This condition for the exact file extension. If it is not present, all file names to vector will be append.
+        //This condition is for the exact file extension. If it is not present, all file names to vector will be appended.
         if(ext != "")
         {
             if(string(dirp->d_name).find(ext+"\0") != -1)
@@ -187,14 +193,34 @@ float InvertIndex::get_idf(string word_instance)
 
 }
 
+float InvertIndex::get_smoothed_idf(string word_instance)
+{
+    int size = index[word_instance].size();
+    return log( (document_count - size + 0.5)/ (size + 0.5) );
+}
+
 float InvertIndex::get_tf_idf(string word,string document)
 {
     return get_tf(word, document) / get_idf(word);
 }
 
-int BM25()
+float InvertIndex::BM25(string word, string document)
 {
+    float k = 0;
+    float b = 0.75;
+    float numerator = this->get_tf(word, document) * (k + 1) * this->get_idf(word);
+    float denumenator = this->get_tf(word, document) + k * (1 - b  + b * doc_length[document] / average_doc_length);
+    return numerator / denumenator;
+}
 
+float InvertIndex::BM25(vector<string> word, string document)
+{
+    float tmp = 0;
+    for(string quary: word)
+    {
+        tmp += BM25(quary, document);
+    }
+    return tmp;
 }
 
 int InvertIndex::ranking(string quary)

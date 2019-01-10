@@ -48,16 +48,27 @@ class InvertIndex
         float get_idf(string word_instance);
         float get_tf_idf(string word,string document);
         int ranking(string quary);
+        float BM25(vector<string> word, string document);
+        float BM25(string word, string document);
+        float get_smoothed_idf(string word_instance);
 
         vector<string> operator[](string q);
     protected:
 
     private:
+        // inverted index - common data structure
         inverted_list index;
+        // path at the begging of building of index
         string pathfolder;
+        // file extentions that needs to consider
         string extention;
 
+        // amout of document in the index
         long document_count;
+        // table of document length
+        map<string, double> doc_length;
+        // average document length (need for BM25)
+        double average_doc_length;
 };
 
 #endif // INVERTINDEX_H
