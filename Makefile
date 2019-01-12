@@ -1,9 +1,9 @@
 CC=g++
-CFLAGS=-c -Wall -std=c++11
+CFLAGS=-c -Wall -std=c++11 -g
 all: test
 
 test: main.o InvertIndex.o
-	$(CC) main.o InvertIndex.o -std=c++11 -o test
+	$(CC) -g main.o InvertIndex.o -std=c++11 -o test
     
 main.o: main.cpp
 	$(CC) $(CFLAGS) -c -std=c++11 main.cpp

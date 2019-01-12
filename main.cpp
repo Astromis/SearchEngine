@@ -7,10 +7,10 @@ int main(int argc, char **argv)
         cout<<"Input parameters is not enough."<<endl;
         return 0;
     }
-    InvertIndex inv(string(argv[1]), string(".h"));
+    InvertIndex inv(string(argv[1]), "");
     inv.build_index();
     vector<string> res;
-    inv.MultipleIntersect(vector<string> {"#include", "int", "float", "Optimization", "fdsf"});
+    inv.ranking(vector<string> {"int", "#include", "#define" });
     //inv.ranking("#include");
     //inv.intersect(res, "int", "#include");
 /*     cout<<"TF: "<< inv.get_tf("#include", "codec.h")<< endl;

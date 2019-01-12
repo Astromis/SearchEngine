@@ -7,9 +7,6 @@ mutex mut;
 
 
 //TODO: 
-// Correct multiintersect
-//  reconstruct minor intersect otherwise multiintersect won't word
-// reconstruct data structure in order to have possibility of sorting with in-built methods
 // saving data
 // make tokenization (boost?)
 
@@ -40,11 +37,13 @@ bool InvertIndex::build_index()
         {
             //add conditions, that cut all
             mut.lock();
-            index[word][f[i].c_str()].push_back((int)(in.tellg()) - (word.length()));
+            num2doc[i] = f[i].c_str();
+            doc2num[f[i].c_str()] = i;
+            index[word][i].push_back((int)(in.tellg()) - (word.length()));
             mut.unlock();
             word_count++;
         }
-        doc_length[f[i].c_str()] = word_count;
+        doc_length[i] = word_count;
         average_doc_length += word_count;
         word_count = 0;
     }
@@ -88,7 +87,8 @@ int InvertIndex::getdir (const string ext, const string dir, vector<string> &fil
                 files.push_back(dir+"/"+string(dirp->d_name));
         }
         else
-            files.push_back(dir+"/"+string(dirp->d_name));
+            if(string(dirp->d_name) != "." && string(dirp->d_name) != "..")
+                files.push_back(dir+"/"+string(dirp->d_name));
     }
     closedir(dp);
     return 0;
@@ -109,7 +109,7 @@ bool InvertIndex::get_dirs(const string ext, const string start_dir, vector<stri
     return true;
 }
 
-bool InvertIndex::get_position_vector(position_vector *response, word_position_map &data, string &quary)
+/* bool InvertIndex::get_position_vector(position_vector *response, word_position_map &data, string &quary)
 {
     word_position_map::iterator it = data.find(quary);
     if(it != data.end())
@@ -118,7 +118,7 @@ bool InvertIndex::get_position_vector(position_vector *response, word_position_m
         return true;
     }
     else return false;
-}
+} */
 
 bool InvertIndex::get_word_position_map(word_position_map *response, string &quary)
 {
@@ -131,14 +131,20 @@ bool InvertIndex::get_word_position_map(word_position_map *response, string &qua
     else return false;
 }
 
-bool InvertIndex::intersect(vector<string> &result, string q1, string q2)
+/* bool InvertIndex::intersect(vector<int> &result, string q1, string q2)
 {
     // return false if no result for one of the quary
     word_position_map p1 = index[q1];
     word_position_map p2 = index[q2];
     if(p1.empty() || p2.empty()) return false;
+
+    //sorting by increasing key numbers
+    sort(p1.begin(),p1.end(),[this](int first, int second){ return first < second; } );
+    sort(p2.begin(),p2.end(),[this](int first, int second){ return first < second; } );
+
     word_position_map::iterator it1 = p1.begin();
     word_position_map::iterator it2 = p2.begin();
+
     while(it1 != p1.end() && it2 != p2.end())
     {
         if(it1->first == it2->first)
@@ -151,43 +157,81 @@ bool InvertIndex::intersect(vector<string> &result, string q1, string q2)
                 it1++;
         else it2++;
     }
-    //cout<< count;
     return true;
-}
- 
-bool InvertIndex::MultipleIntersect(vector<string> quary)
+} */
+
+vector<int> InvertIndex::intersect(vector<int> past, string q2)
 {
-    set<string> result;
+    // get keys from map and put in vector
+    auto func = [](word_position_map en)
+    {
+        vector<int> r;
+        for(auto i: en)
+            r.push_back(i.first);
+        sort(r.begin(), r.end());
+        return r;
+    };
+
+    vector<int> result;
+    // return false if no result for one of the quary
+    vector<int> p2 = func(index[q2]);
+    // if(p2.empty()) return vector<string>;
+
+    vector<int>::iterator it1 = past.begin();
+    vector<int>::iterator it2 = p2.begin();
+
+    do
+    {
+        if((*it1) == (*it2))
+        {
+            result.push_back((*it1));
+            it1++;
+            it2++;
+        }
+         else if((*it1) < (*it2))
+                it1++;
+        else it2++;
+    }
+    while(it1 != past.end() && it2 != p2.end());
+
+    return result;
+}
+
+// get keys from map and put in vector
+auto func = [](word_position_map en)
+{
+    vector<int> r;
+    for(auto i: en)
+        r.push_back(i.first);
+    sort(r.begin(), r.end());
+    return r;
+};
+
+
+vector<int> InvertIndex::MultipleIntersect(vector<string> quary)
+{
+
     //sort vector by increasing frequency
     auto comp = [this](string first, string second)
     {
         return get_tf(first) > get_tf(second);
     };
+
+
+
     sort(quary.begin(), quary.end(), comp);
-    for(auto i: quary)
-        cout<<i<< " " << get_tf(i)<<endl;
     // word_position_map temp_map;
     // vector<string> cycle_temp_map;
 
+    vector<int> result = func(index[quary.back()]);
+    quary.pop_back();
+    
     for(auto& i: quary)
-    {
-        for(auto& j: index[quary.back()])
-            result.insert(j.first);
-        quary.pop_back();
+    {        
+        result = intersect(result, i);
     }
-
-    for(auto i: result)
-        cout<<i<<endl;
-
-/*     word_position_map::iterator it = temp_map.begin();
-    while(quary.size() != 0 && it != temp_map.end())
-    {
-        temp_map = index[quary.back()];
-        //intersect(&cycle_temp_map, result, &temp_map);
-        result.insert(cycle_temp_map.begin(), result.end());
-        quary.pop_back();
-    } */
-    return true;
+    
+    return result;
 } 
 
 vector<string> InvertIndex::operator[](string q)
@@ -195,12 +239,12 @@ vector<string> InvertIndex::operator[](string q)
     vector<string> resp;
     if(index.find(q) == index.end()) return vector<string>();
     for(auto& it: index[q])
-        resp.push_back(it.first);
+        resp.push_back(num2doc[it.first]);
     return resp;
 }
 
 
-size_t InvertIndex::get_tfd(string  word_instance, string doc_instance)
+size_t InvertIndex::get_tfd(string  word_instance, int doc_instance)
 {
     size_t tf = index[word_instance][doc_instance].size();
     
@@ -221,7 +265,7 @@ float InvertIndex::get_smoothed_idf(string word_instance)
     return log( (document_count - size + 0.5) / (size + 0.5) );
 }
 
-float InvertIndex::get_tf_idf(string word,string document)
+float InvertIndex::get_tf_idf(string word,int document)
 {
     return get_tfd(word, document) / get_idf(word);
 }
@@ -237,7 +281,7 @@ float InvertIndex::get_tf(string word)
     return freq;
 }
 
-float InvertIndex::BM25(string word, string document)
+float InvertIndex::BM25(string word, int document)
 {
     float k = 2;
     float b = 0.75;
@@ -246,7 +290,7 @@ float InvertIndex::BM25(string word, string document)
     return numerator / denumenator;
 }
 
-float InvertIndex::BM25(vector<string> word, string document)
+ float InvertIndex::BM25(vector<string> word, int document)
 {
     float tmp = 0;
     for(string quary: word)
@@ -254,7 +298,7 @@ float InvertIndex::BM25(vector<string> word, string document)
         tmp += BM25(quary, document);
     }
     return tmp;
-}
+} 
 
 int InvertIndex::ranking(string quary)
 {
@@ -265,7 +309,7 @@ int InvertIndex::ranking(string quary)
     for(auto doc: docs)
         // getting of idf for each word should be obtained here because of high computational cost
         {
-            result.push_back(make_pair(BM25(quary, doc.first), doc.first));
+            result.push_back(make_pair(BM25(quary, doc.first), num2doc[doc.first]));
         }
 
     sort(result.begin(), result.end());
@@ -276,5 +320,18 @@ int InvertIndex::ranking(string quary)
 
 int InvertIndex::ranking(vector<string> quary)
 {
+    vector<int>  docs = MultipleIntersect(quary);
+    vector< pair<float, string> > result;
+    pair<float, string> temp;
 
+    for(auto doc: docs)
+        // getting of idf for each word should be obtained here because of high computational cost
+        {
+            result.push_back(make_pair(BM25(quary, doc), num2doc[doc]));
+        }
+
+     sort(result.begin(), result.end());
+    for(vector< pair<float, string> >::iterator it=result.begin(); it != result.end(); it++)
+        cout<<it->second<<" "<<it->first<<endl;
+    return 0;
 }

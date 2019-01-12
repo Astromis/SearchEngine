@@ -21,7 +21,7 @@ using namespace std;
 // this vector contains an order number of word in text
 typedef vector<int> position_vector;
 // this map contains documents as a key and position vectors as a value
-typedef map<string,position_vector> word_position_map;
+typedef map<int,position_vector> word_position_map;
 // this is finally inverted list
 typedef map <string, word_position_map > inverted_list;
 typedef vector<string> doc_list;
@@ -34,8 +34,9 @@ class InvertIndex
 
         bool build_index();
         void threadIndexing(vector<string> &files, inverted_list &index);
-        bool intersect(vector<string> &result, string q1, string q2);
-        bool MultipleIntersect(vector<string> quary);
+        bool intersect(vector<int> &result, string q1, string q2);
+        vector<int> intersect(vector<int> past, string q2);
+        vector<int> MultipleIntersect(vector<string> quary);
         //interface
         bool get_word_position_map(word_position_map *response, string &quary);
         bool get_position_vector(position_vector *response, word_position_map &data, string &quary);
@@ -43,14 +44,14 @@ class InvertIndex
         int getdir (string ext, string dir, vector<string> &files, queue<string> &dirs);
         bool get_dirs(const string ext, const string start_dir, vector<string> &files);
 
-        size_t get_tfd(string  word_instance, string doc_instance);
+        size_t get_tfd(string  word_instance, int doc_instance);
         float get_tf(string word);
         float get_idf(string word_instance);
-        float get_tf_idf(string word,string document);
+        float get_tf_idf(string word,int document);
         int ranking(string quary);
         int ranking(vector<string> quary);
-        float BM25(vector<string> word, string document);
-        float BM25(string word, string document);
+        float BM25(vector<string> word, int document);
+        float BM25(string word, int document);
         float get_smoothed_idf(string word_instance);
 
         vector<string> operator[](string q);
@@ -64,10 +65,12 @@ class InvertIndex
         // file extentions that needs to consider
         string extention;
 
+        map<int, string > num2doc;
+        map<string, int> doc2num;
         // amout of document in the index
         long document_count;
         // table of document length
-        map<string, float> doc_length;
+        map<int, float> doc_length;
         // average document length (need for BM25)
         float average_doc_length;
 };
