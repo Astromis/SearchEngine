@@ -17,7 +17,7 @@ InvertIndex.o: InvertIndex.cpp
 	$(CC) $(CFLAGS) -c -std=c++11 InvertIndex.cpp
 
 clean:
-	rm -rf *.o *.cxx *.py test
+	rm -rf *.o *.cxx *.py *.so test
 	
 swig:
 	g++ -fPIC -c InvertIndex.cpp -o InvertIndex.o --std=c++11

@@ -34,15 +34,15 @@ class InvertIndex
 
         bool build_index();
         void threadIndexing(vector<string> &files, inverted_list &index);
-        bool intersect(vector<int> &result, string q1, string q2);
+        //bool intersect(vector<int> &result, string q1, string q2);
         vector<int> intersect(vector<int> past, string q2);
         vector<int> MultipleIntersect(vector<string> quary);
         //interface
         vector< pair<float, string> > find(vector<string> quary);
         vector< pair<float, string> > find(string quary);
 
-        bool get_word_position_map(word_position_map *response, string &quary);
-        bool get_position_vector(position_vector *response, word_position_map &data, string &quary);
+        //bool get_word_position_map(word_position_map *response, string &quary);
+        //bool get_position_vector(position_vector *response, word_position_map &data, string &quary);
         //utils
         int getdir (string ext, string dir, vector<string> &files, queue<string> &dirs);
         bool get_dirs(const string ext, const string start_dir, vector<string> &files);
@@ -56,8 +56,8 @@ class InvertIndex
         float BM25(vector<string> word, int document);
         float BM25(string word, int document);
 
-        int ranking(string quary);
-        int ranking(vector<string> quary);
+        //int ranking(string quary);
+        //int ranking(vector<string> quary);
         
 
 

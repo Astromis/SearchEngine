@@ -9,10 +9,15 @@ mutex mut;
 //TODO: 
 // saving data
 // make tokenization (boost?)
+// what does program should do if amount of files would be much more then memory?
+//      The one idea is block writing in file by numerical condition.
+// Speed.Probably, it would be a good idea to create several instances of inverted index.
+//      Each index is owned by separated threads.
+//  By the way, writting in file could done threadable. Just use seek() to get posobility writting data in one file by several threads.
 
 InvertIndex::InvertIndex(string path, string ext)
 {
-    pathfolder = path;
+    pathfolder = path;  
     extention = ext;
     //ctor
 }
@@ -107,28 +112,6 @@ bool InvertIndex::get_dirs(const string ext, const string start_dir, vector<stri
         getdir(ext, next_dir, files, dirs);
     }
     return true;
-}
-
-/* bool InvertIndex::get_position_vector(position_vector *response, word_position_map &data, string &quary)
-{
-    word_position_map::iterator it = data.find(quary);
-    if(it != data.end())
-    {
-        *response = it->second;
-        return true;
-    }
-    else return false;
-} */
-
-bool InvertIndex::get_word_position_map(word_position_map *response, string &quary)
-{
-    inverted_list::iterator it = this->index.find(quary);
-    if(it != index.end())
-    {
-        *response = it->second;
-        return true;
-    }
-    else return false;
 }
 
 /* bool InvertIndex::intersect(vector<int> &result, string q1, string q2)
