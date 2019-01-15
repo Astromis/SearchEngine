@@ -38,21 +38,28 @@ class InvertIndex
         vector<int> intersect(vector<int> past, string q2);
         vector<int> MultipleIntersect(vector<string> quary);
         //interface
+        vector< pair<float, string> > find(vector<string> quary);
+        vector< pair<float, string> > find(string quary);
+
         bool get_word_position_map(word_position_map *response, string &quary);
         bool get_position_vector(position_vector *response, word_position_map &data, string &quary);
         //utils
         int getdir (string ext, string dir, vector<string> &files, queue<string> &dirs);
         bool get_dirs(const string ext, const string start_dir, vector<string> &files);
 
+        // math
         size_t get_tfd(string  word_instance, int doc_instance);
         float get_tf(string word);
         float get_idf(string word_instance);
         float get_tf_idf(string word,int document);
-        int ranking(string quary);
-        int ranking(vector<string> quary);
+        float get_smoothed_idf(string word_instance);
         float BM25(vector<string> word, int document);
         float BM25(string word, int document);
-        float get_smoothed_idf(string word_instance);
+
+        int ranking(string quary);
+        int ranking(vector<string> quary);
+        
+
 
         vector<string> operator[](string q);
     protected:
@@ -65,6 +72,7 @@ class InvertIndex
         // file extentions that needs to consider
         string extention;
 
+        // tables that defines relations between documents and its indeces
         map<int, string > num2doc;
         map<string, int> doc2num;
         // amout of document in the index

@@ -300,12 +300,13 @@ float InvertIndex::BM25(string word, int document)
     return tmp;
 } 
 
-int InvertIndex::ranking(string quary)
+vector< pair<float, string> > InvertIndex::find(string quary)
 {
     word_position_map docs = index[quary];
     vector< pair<float, string> > result;
     pair<float, string> temp;
 
+    // perform ranking
     for(auto doc: docs)
         // getting of idf for each word should be obtained here because of high computational cost
         {
@@ -313,17 +314,18 @@ int InvertIndex::ranking(string quary)
         }
 
     sort(result.begin(), result.end());
-    for(vector< pair<float, string> >::iterator it=result.begin(); it != result.end(); it++)
-        cout<<it->second<<" "<<it->first<<endl;
-    return 0;
-}
+    return result;
+    /* for(vector< pair<float, string> >::iterator it=result.begin(); it != result.end(); it++)
+        cout<<it->second<<" "<<it->first<<endl; */
+        }
 
-int InvertIndex::ranking(vector<string> quary)
+vector< pair<float, string> > InvertIndex::find(vector<string> quary)
 {
     vector<int>  docs = MultipleIntersect(quary);
     vector< pair<float, string> > result;
     pair<float, string> temp;
 
+    // perform ranking
     for(auto doc: docs)
         // getting of idf for each word should be obtained here because of high computational cost
         {
@@ -331,7 +333,7 @@ int InvertIndex::ranking(vector<string> quary)
         }
 
      sort(result.begin(), result.end());
-    for(vector< pair<float, string> >::iterator it=result.begin(); it != result.end(); it++)
-        cout<<it->second<<" "<<it->first<<endl;
-    return 0;
+     return result;
+    /* for(vector< pair<float, string> >::iterator it=result.begin(); it != result.end(); it++)
+        cout<<it->second<<" "<<it->first<<endl; */
 }
