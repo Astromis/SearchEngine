@@ -8,7 +8,7 @@ PYTHONL = -Xlinker -export-dynamic
 all: test
 
 test: main.o InvertIndex.o SaverData.o
-	$(CC) main.o InvertIndex.o -std=c++11 -o test
+	$(CC) main.o InvertIndex.o SaverData.o -std=c++11 -o test
     
 main.o: main.cpp
 	$(CC) $(CFLAGS) -c -std=c++11 main.cpp

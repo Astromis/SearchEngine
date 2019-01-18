@@ -29,6 +29,8 @@ typedef map<int,position_vector> word_position_map;
 typedef map <string, word_position_map > inverted_list;
 typedef vector<string> doc_list;
 
+class SaverData;
+
 class InvertIndex
 {
     public:

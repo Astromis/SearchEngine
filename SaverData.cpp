@@ -1,12 +1,6 @@
 #include "SaverData.h"
 
 
-TextFileSaverData::TextFileSaverData(string path)
-{
-    path_ = path;
-}
-
-
 void TextFileSaverData::save(InvertIndex *instance)
 {
     string table = "table.txt", table_len = "table_len.txt";

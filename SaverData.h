@@ -1,19 +1,26 @@
+#ifndef SAVERDATA_H
+#define SAVERDATA_H
+
 #include "InvertIndex.h"
 #include <iostream>
 #include <fstream>
+
+using namespace std;
+
+
+class InvertIndex;
 
 class SaverData
 {
     public:
     SaverData();
-    SaverData(string path);
     virtual ~SaverData();
-    virtual void save(InvertIndex *instance) = 0;
-    InvertIndex index_p;
+    //SaverData(string path_to);
+    
+    virtual void save(InvertIndex *instance);
     string path_;
     protected:
 
-    private:
     
 
 };
@@ -23,8 +30,9 @@ class TextFileSaverData : public SaverData
     
     
     public:
-        TextFileSaverData(string path):SaverData(path){};
-        virtual void save(InvertIndex *instance);
+        TextFileSaverData(string path){path_ = path; };
+        void save(InvertIndex *instance)  override;
+        string path_;
 };
 
 class DatabaseSaverData : public SaverData 
@@ -33,3 +41,5 @@ class DatabaseSaverData : public SaverData
   //virtual void save(InvertIndex *instance);
   
 };
+
+#endif

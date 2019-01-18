@@ -21,6 +21,8 @@ int main(int argc, char **argv)
     for(auto& i:  inv.find(vector<string> {"int", "#include" }))
         cout<<i.first<<" "<<i.second<<endl;
     
-    TextFileSaverData saver("./");
+    string path_a = "./";
+    TextFileSaverData saver(path_a);
+    
     return 0;
 }
