@@ -1,6 +1,4 @@
 #include "InvertIndex.h"
-#include "SaverData.h"
-
 #include <map>
 #include <ctime>
 
@@ -23,6 +21,7 @@ int main(int argc, char **argv)
     
     string path_a = "./";
     TextFileSaverData saver(path_a);
+    inv.save(saver);
     
     return 0;
 }
