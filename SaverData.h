@@ -1,28 +1,35 @@
 #include "InvertIndex.h"
+#include <iostream>
+#include <fstream>
 
 class SaverData
 {
     public:
     SaverData();
+    SaverData(string path);
     virtual ~SaverData();
-    virtual void save(string path) = 0;
-    
-    private:
+    virtual void save(InvertIndex *instance) = 0;
     InvertIndex index_p;
+    string path_;
+    protected:
+
+    private:
+    
 
 };
 
 class TextFileSaverData : public SaverData 
 {
     
+    
     public:
-      TextFileSaverData(InvertIndex &instance);
-      virtual void save(string path);
+        TextFileSaverData(string path):SaverData(path){};
+        virtual void save(InvertIndex *instance);
 };
 
 class DatabaseSaverData : public SaverData 
 {
     public:
-  virtual void save(string path);
+  //virtual void save(InvertIndex *instance);
   
 };

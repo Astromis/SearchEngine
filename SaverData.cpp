@@ -1,11 +1,21 @@
 #include "SaverData.h"
 
-TextFileSaverData::TextFileSaverData(InvertIndex &instance)
+
+TextFileSaverData::TextFileSaverData(string path)
 {
-    index_p = instance;
+    path_ = path;
 }
 
-void save(InvertIndex index)
+
+void TextFileSaverData::save(InvertIndex *instance)
 {
+    string table = "table.txt", table_len = "table_len.txt";
     
+    ofstream myfile;
+    myfile.open (path_ + table);
+    //myfile << "Writing this to a file.\n";
+    for(auto i: (*instance).GetN2D())
+        myfile<<i.first<<" "<<i.second<<endl;
+    myfile.close();
+    //return 0;
 }

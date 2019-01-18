@@ -14,6 +14,9 @@
 #include <thread>
 #include <mutex>
 #include <math.h>
+
+#include "SaverData.h"
+
 using namespace std;
 
 
@@ -29,6 +32,7 @@ typedef vector<string> doc_list;
 class InvertIndex
 {
     public:
+        InvertIndex();
         InvertIndex(string path, string ext);
         virtual ~InvertIndex();
 
@@ -59,10 +63,19 @@ class InvertIndex
         //int ranking(string quary);
         //int ranking(vector<string> quary);
         
-
+        void save(SaverData& saver);
 
         vector<string> operator[](string q);
+
+        inverted_list GetIndex() { return index; };
+        map<int, string > GetN2D() { return num2doc; };
+        map<string, int> GetD2N() {return doc2num; };
+        long GetDocCount() { return document_count; };
+        map<int, float> GetD2L() { return doc_length; }
+        float GetAverLen() { return average_doc_length; }
+
     protected:
+
 
     private:
         // inverted index - common data structure

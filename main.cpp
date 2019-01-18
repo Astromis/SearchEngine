@@ -1,4 +1,6 @@
 #include "InvertIndex.h"
+#include "SaverData.h"
+
 #include <map>
 #include <ctime>
 
@@ -18,5 +20,7 @@ int main(int argc, char **argv)
    
     for(auto& i:  inv.find(vector<string> {"int", "#include" }))
         cout<<i.first<<" "<<i.second<<endl;
+    
+    TextFileSaverData saver("./");
     return 0;
 }

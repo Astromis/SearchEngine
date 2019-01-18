@@ -13,7 +13,11 @@ mutex mut;
 //      The one idea is block writing in file by numerical condition.
 // Speed.Probably, it would be a good idea to create several instances of inverted index.
 //      Each index is owned by separated threads.
-//  By the way, writting in file could done threadable. Just use seek() to get posobility writting data in one file by several threads.
+//  By the way, writting in file could done threadable. Just use seek() to get a posobility writting data in one file by several threads.
+
+InvertIndex::InvertIndex()
+{
+}
 
 InvertIndex::InvertIndex(string path, string ext)
 {
@@ -319,4 +323,9 @@ vector< pair<float, string> > InvertIndex::find(vector<string> quary)
      return result;
     /* for(vector< pair<float, string> >::iterator it=result.begin(); it != result.end(); it++)
         cout<<it->second<<" "<<it->first<<endl; */
+}
+
+void InvertIndex::save(SaverData& saver)
+{
+    saver.save(this);
 }
