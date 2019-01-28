@@ -15,7 +15,6 @@
 #include <mutex>
 #include <math.h>
 
-#include "SaverData.h"
 
 using namespace std;
 
@@ -97,5 +96,38 @@ class InvertIndex
         // average document length (need for BM25)
         float average_doc_length;
 };
+
+class SaverData
+{
+    public:
+
+    virtual void save(InvertIndex *instance)=0;
+    string path_;
+    protected:
+
+    
+
+};
+
+class TextFileSaverData : public SaverData 
+{
+    
+    
+    public:
+        TextFileSaverData(string path){path_ = path; };
+        void save(InvertIndex *instance)  override;
+        template<class mapType>
+        void write_simple_map(mapType map, string file_name);
+        string path_;
+        string table = "table.txt", table_len = "table_len.txt";
+};
+
+class DatabaseSaverData : public SaverData 
+{
+    public:
+  //virtual void save(InvertIndex *instance);
+  
+};
+
 
 #endif // INVERTINDEX_H
