@@ -13,33 +13,31 @@ class InvertIndex;
 class SaverData
 {
     public:
-    SaverData();
-    virtual ~SaverData();
-    //SaverData(string path_to);
-    
-    virtual void save(InvertIndex *instance);
+
+    virtual void save(InvertIndex *instance)=0;
+    //virtual ~SaverData();
     string path_;
     protected:
-
-    
 
 };
 
 class TextFileSaverData : public SaverData 
 {
     
-    
     public:
-        TextFileSaverData(string path){path_ = path; };
+        TextFileSaverData(string path);
         void save(InvertIndex *instance)  override;
+        template<class mapType>
+        void write_simple_map(mapType map, string file_name);
         string path_;
+        string table = "table.txt", table_len = "table_len.txt";
 };
 
-class DatabaseSaverData : public SaverData 
+/* class DatabaseSaverData : public SaverData 
 {
     public:
   //virtual void save(InvertIndex *instance);
   
-};
+}; */
 
 #endif

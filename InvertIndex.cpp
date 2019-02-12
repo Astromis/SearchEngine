@@ -1,4 +1,5 @@
 #include "InvertIndex.h"
+#include "SaverData.h"
 #include <algorithm>
 #include <utility>
 #include <set>
@@ -329,3 +330,19 @@ void InvertIndex::save(SaverData& saver)
 {
     saver.save(this);
 }
+
+/* void TextFileSaverData::save(InvertIndex *instance)
+{
+    write_simple_map(instance->GetD2L(), table_len);
+
+}
+
+template<class mapType>
+void TextFileSaverData::write_simple_map(mapType map, string file_name)
+{
+    ofstream myfile;
+    myfile.open (path_ + file_name, ios::out);
+    for(auto i: map)
+        myfile<<i.first<<" "<<i.second<<endl;
+    myfile.close();
+} */

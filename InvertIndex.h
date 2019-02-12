@@ -15,7 +15,6 @@
 #include <mutex>
 #include <math.h>
 
-#include "SaverData.h"
 
 using namespace std;
 
@@ -97,5 +96,7 @@ class InvertIndex
         // average document length (need for BM25)
         float average_doc_length;
 };
+
+
 
 #endif // INVERTINDEX_H
