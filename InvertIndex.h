@@ -39,7 +39,6 @@ class InvertIndex
 
         bool build_index();
         void threadIndexing(vector<string> &files, inverted_list &index);
-        //bool intersect(vector<int> &result, string q1, string q2);
         vector<int> intersect(vector<int> past, string q2);
         vector<int> MultipleIntersect(vector<string> quary);
         //interface
@@ -59,7 +58,7 @@ class InvertIndex
         float get_tf_idf(string word,int document);
         float get_smoothed_idf(string word_instance);
         float BM25(vector<string> word, int document);
-        float BM25(string word, int document);
+        float BM25_kernel(string word, int document);
 
         //int ranking(string quary);
         //int ranking(vector<string> quary);

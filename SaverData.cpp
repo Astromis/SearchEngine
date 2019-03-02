@@ -14,11 +14,15 @@
     //return 0;
 } */
 
-
+/**
+ * @brief Contructor
+ * @param [in] path Path for saving a file
+ */
 TextFileSaverData::TextFileSaverData(string path)
 {
     path_ = path; 
 }
+
 
 void TextFileSaverData::save(InvertIndex *instance)
 {
@@ -26,6 +30,12 @@ void TextFileSaverData::save(InvertIndex *instance)
 
 }
 
+/**
+ * @brief Write a map to a file
+ * @param [in] mapType type of a map
+ * @param [in] map Map to be saved
+ * @param [in] file_name File where map will be saved
+ */
 template<class mapType>
 void TextFileSaverData::write_simple_map(mapType map, string file_name)
 {

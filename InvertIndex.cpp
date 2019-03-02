@@ -32,6 +32,12 @@ InvertIndex::~InvertIndex()
     //dtor
 }
 
+/**
+ * @brief Create an inverted index
+ * Starting with entry point, go through the all directores 
+ * and colect tokens.
+ * @return True if index has been built successifully
+ */
 bool InvertIndex::build_index()
 {
     doc_list f;
@@ -74,6 +80,14 @@ void InvertIndex::threadIndexing(vector<string> &files, inverted_list &index)
     thread2.join(); */
 }
 
+/**
+ * @breif Gef files and dirs in one dir
+ * @param [in] ext Extention of file that need to collect
+ * @param [in] dir Dir path
+ * @param [in] files Files, which contains in dir
+ * @param [in] dirs Dirs,  which contains in dr
+ * @return 0 If everithing is ok
+ */
 int InvertIndex::getdir (const string ext, const string dir, vector<string> &files, queue<string> &dirs)
 {
     DIR *dp;
@@ -90,7 +104,7 @@ int InvertIndex::getdir (const string ext, const string dir, vector<string> &fil
 
             dirs.push(dir+"/"+string(dirp->d_name));
         else
-        //This condition is for the exact file extension. If it is not present, all file names to vector will be appended.
+        //This condition is for the exact file extension. If it is not present, all file names will be appended to a vector.
         if(ext != "")
         {
             if(string(dirp->d_name).find(ext+"\0") != -1)
@@ -104,6 +118,13 @@ int InvertIndex::getdir (const string ext, const string dir, vector<string> &fil
     return 0;
 }
 
+/**
+ * @brief Collects all files, staring with some dir
+ * @param [in] ext Extention of file that need to collect
+ * @param [in] start_dir Entry dir path
+ * @param [in/out] files Files, which contains in dir
+ * @return True If everithing is ok
+ */
 bool InvertIndex::get_dirs(const string ext, const string start_dir, vector<string> &files)
 {
     queue<string> dirs = queue<string>();
@@ -148,6 +169,12 @@ bool InvertIndex::get_dirs(const string ext, const string start_dir, vector<stri
     return true;
 } */
 
+/**
+ * @brief Performs intersection between vectors of docID
+ * @param [in] past Actual vector of docID
+ * @param [in] q2 String by which the next vector to be intersect is obtained
+ * @return Resulted vector
+ */
 vector<int> InvertIndex::intersect(vector<int> past, string q2)
 {
     // get keys from map and put in vector
@@ -195,7 +222,11 @@ auto func = [](word_position_map en)
     return r;
 };
 
-
+/**
+ * @brief Performs intersection with multiple quaries
+ * @param [in] quary Vector of quaries(strings, means words) that need to be intersected
+ * @preturn result Resulted vector of docID
+ */
 vector<int> InvertIndex::MultipleIntersect(vector<string> quary)
 {
 
@@ -222,6 +253,11 @@ vector<int> InvertIndex::MultipleIntersect(vector<string> quary)
     return result;
 } 
 
+/**
+ * @breif Overload [] operator by getting a word_position_map
+ * @param [in] q Quary string
+ * @return resp Word position map 
+ */
 vector<string> InvertIndex::operator[](string q)
 {
     vector<string> resp;
@@ -231,14 +267,19 @@ vector<string> InvertIndex::operator[](string q)
     return resp;
 }
 
-
-size_t InvertIndex::get_tfd(string  word_instance, int doc_instance)
+/**
+ * @brief Calculates frequency of word in one document
+ */
+size_t InvertIndex::get_tfd(string word_instance, int doc_instance)
 {
     size_t tf = index[word_instance][doc_instance].size();
     
     return tf;
 }
 
+/**
+ * @brief Calculates IDF of word
+ */
 float InvertIndex::get_idf(string word_instance)
 {
     int size = index[word_instance].size();
@@ -246,6 +287,9 @@ float InvertIndex::get_idf(string word_instance)
 
 }
 
+/**
+ * @brief Calculates smoothed IDF of word
+ */
 float InvertIndex::get_smoothed_idf(string word_instance)
 {
     int size = index[word_instance].size();
@@ -253,11 +297,17 @@ float InvertIndex::get_smoothed_idf(string word_instance)
     return log( (document_count - size + 0.5) / (size + 0.5) );
 }
 
-float InvertIndex::get_tf_idf(string word,int document)
+/**
+ * @brief Calculates TF-IDF of word for one document
+ */
+float InvertIndex::get_tf_idf(string word, int document)
 {
     return get_tfd(word, document) / get_idf(word);
 }
 
+/**
+ * @bried Get a frequency of word through all documents
+ */
 float InvertIndex::get_tf(string word)
 {
     // It is not a good idea. 
@@ -269,7 +319,10 @@ float InvertIndex::get_tf(string word)
     return freq;
 }
 
-float InvertIndex::BM25(string word, int document)
+/**
+ * @brief Computes BM25 kernel multiplier or actual result for a one-word quary
+ */
+float InvertIndex::BM25_kernel(string word, int document)
 {
     float k = 2;
     float b = 0.75;
@@ -277,17 +330,27 @@ float InvertIndex::BM25(string word, int document)
     float denumenator =  get_tfd(word, document) + k * (1 - b  + b * doc_length[document] / average_doc_length);
     return numerator / denumenator;
 }
-
+/**
+ * @brief Computes BM25 ranking function for quary
+ * @param [in] word Vector of quares
+ * @param [in] doc Document
+ * @retrun BM25 result for a quary
+ */
  float InvertIndex::BM25(vector<string> word, int document)
 {
     float tmp = 0;
     for(string quary: word)
     {
-        tmp += BM25(quary, document);
+        tmp += BM25_kernel(quary, document);
     }
     return tmp;
 } 
 
+/**
+ * @brief Performs a search of document, rinking they by BM25 (one word)
+ * @param quary Word to be searched
+ * @return Vector of pairs of doc and their ranking value in descending order
+ */ 
 vector< pair<float, string> > InvertIndex::find(string quary)
 {
     word_position_map docs = index[quary];
@@ -298,15 +361,18 @@ vector< pair<float, string> > InvertIndex::find(string quary)
     for(auto doc: docs)
         // getting of idf for each word should be obtained here because of high computational cost
         {
-            result.push_back(make_pair(BM25(quary, doc.first), num2doc[doc.first]));
+            result.push_back(make_pair(BM25_kernel(quary, doc.first), num2doc[doc.first]));
         }
 
     sort(result.begin(), result.end());
     return result;
-    /* for(vector< pair<float, string> >::iterator it=result.begin(); it != result.end(); it++)
-        cout<<it->second<<" "<<it->first<<endl; */
-        }
+}
 
+/**
+ * @brief Performs a search of document, rinking they by BM25
+ * @param [in] quary Vector of words to be searched
+ * @return Vector of pairs of doc and their ranking value in descending order
+ */ 
 vector< pair<float, string> > InvertIndex::find(vector<string> quary)
 {
     vector<int>  docs = MultipleIntersect(quary);
@@ -326,6 +392,10 @@ vector< pair<float, string> > InvertIndex::find(vector<string> quary)
         cout<<it->second<<" "<<it->first<<endl; */
 }
 
+/**
+ * @brief Saves the inverted index
+ * @param saver Object of SaverData famaly classess,
+ */ 
 void InvertIndex::save(SaverData& saver)
 {
     saver.save(this);
