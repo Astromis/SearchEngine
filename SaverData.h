@@ -15,6 +15,7 @@ class SaverData
     public:
 
     virtual void save(InvertIndex *instance)=0;
+    virtual void load()=0;
     //virtual ~SaverData();
     string path_;
     protected:
@@ -27,6 +28,8 @@ class TextFileSaverData : public SaverData
     public:
         TextFileSaverData(string path);
         void save(InvertIndex *instance)  override;
+        void load() override;
+
         template<class mapType>
         void write_simple_map(mapType map, string file_name);
         string path_;

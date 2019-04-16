@@ -22,7 +22,9 @@ int main(int argc, char **argv)
     
     string path_a = "./";
     TextFileSaverData saver(path_a);
+    cout<<"Saving..."<<endl;
     inv.save(saver);
-    
+    cout<<"Loading..."<<endl;
+    inv.load(saver);
     return 0;
 }

@@ -401,6 +401,11 @@ void InvertIndex::save(SaverData& saver)
     saver.save(this);
 }
 
+void InvertIndex::load(SaverData& saver)
+{
+    saver.load();
+}
+
 /* void TextFileSaverData::save(InvertIndex *instance)
 {
     write_simple_map(instance->GetD2L(), table_len);

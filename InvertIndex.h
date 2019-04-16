@@ -64,6 +64,7 @@ class InvertIndex
         //int ranking(vector<string> quary);
         
         void save(SaverData& saver);
+        void load(SaverData& saver);
 
         vector<string> operator[](string q);
 

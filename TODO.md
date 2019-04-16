@@ -5,3 +5,6 @@
 - [ ] Develop a blocked indexing
 - [ ] Develop a saver for the inverted index (!)
 - [ ] Make saving with zipping
+
+Notes:
+Function for saving a general inverted list was created. Need to make an order into structure and make complite the rest of daving process.
