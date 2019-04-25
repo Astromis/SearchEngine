@@ -18,13 +18,18 @@ int main(int argc, char **argv)
     vector<string> res;
    
     for(auto& i:  inv.find(vector<string> {"int", "#include" }))
-        cout<<i.first<<" "<<i.second<<endl;
+        cout<<i.first<<" "<<i.second<<endl; 
     
     string path_a = "./";
     TextFileSaverData saver(path_a);
     cout<<"Saving..."<<endl;
     inv.save(saver);
+    cout<<"***********************************"<<endl;
+    InvertIndex loaded_in;
     cout<<"Loading..."<<endl;
-    inv.load(saver);
+    loaded_in.load(saver);
+    for(auto& i:  loaded_in.find(vector<string> {"int", "#include" }))
+        cout<<i.first<<" "<<i.second<<endl;
+
     return 0;
 }

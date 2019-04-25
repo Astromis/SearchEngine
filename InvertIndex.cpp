@@ -403,7 +403,7 @@ void InvertIndex::save(SaverData& saver)
 
 void InvertIndex::load(SaverData& saver)
 {
-    saver.load();
+    saver.load(this);
 }
 
 /* void TextFileSaverData::save(InvertIndex *instance)

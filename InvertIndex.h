@@ -75,6 +75,14 @@ class InvertIndex
         map<int, float> GetD2L() { return doc_length; }
         float GetAverLen() { return average_doc_length; }
 
+        void SetIndex(inverted_list& list) {index = list;}
+        void SetPathfolder(string path) {pathfolder = path;}
+        void SetN2D(map<int, string> n2d) {num2doc = n2d;}
+        void SetD2N(map<string, int> d2n) {doc2num=d2n;}
+        void SetD2L(map<int, float> d2l) {doc_length = d2l;}
+        void SetDocCount(long dc) {document_count = dc;}
+        void SetAvrDocLen(float adl) {average_doc_length = adl;}
+
     protected:
 
 
