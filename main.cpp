@@ -21,7 +21,7 @@ int main(int argc, char **argv)
         cout<<i.first<<" "<<i.second<<endl; 
     
     string path_a = "./";
-    TextFileSaverData saver(path_a);
+    BinarySaverData saver(path_a);
     cout<<"Saving..."<<endl;
     inv.save(saver);
     cout<<"***********************************"<<endl;

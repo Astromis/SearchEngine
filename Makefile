@@ -10,8 +10,8 @@ PYTHONL = -Xlinker -export-dynamic
 
 all: test
 
-test: main.o SaverData.o InvertIndex.o 
-	$(CC) $(INCLUDES) main.o InvertIndex.o SaverData.o -std=c++11 -o test -g 
+test: main.o SaverData.o InvertIndex.o utils.o
+	$(CC) $(INCLUDES) main.o InvertIndex.o SaverData.o utils.o -std=c++11 -o test -g 
     
 main.o: main.cpp
 	$(CC) $(CFLAGS) -c -std=c++11 main.cpp 
@@ -22,7 +22,8 @@ SaverData.o: SaverData.cpp
 InvertIndex.o: InvertIndex.cpp
 	$(CC) $(CFLAGS) -c -std=c++11 InvertIndex.cpp
 
-
+utils.o: utils.cpp
+	$(CC) $(CFLAGS) -c -std=c++11 utils.cpp
 
 clean:
 	rm -rf *.o *.cxx *.py *.so test

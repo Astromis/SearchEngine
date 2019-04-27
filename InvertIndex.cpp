@@ -8,7 +8,6 @@ mutex mut;
 
 
 //TODO: 
-// saving data
 // make tokenization (boost?)
 // what does program should do if amount of files would be much more then memory?
 //      The one idea is block writing in file by numerical condition.
@@ -140,35 +139,6 @@ bool InvertIndex::get_dirs(const string ext, const string start_dir, vector<stri
     return true;
 }
 
-/* bool InvertIndex::intersect(vector<int> &result, string q1, string q2)
-{
-    // return false if no result for one of the quary
-    word_position_map p1 = index[q1];
-    word_position_map p2 = index[q2];
-    if(p1.empty() || p2.empty()) return false;
-
-    //sorting by increasing key numbers
-    sort(p1.begin(),p1.end(),[this](int first, int second){ return first < second; } );
-    sort(p2.begin(),p2.end(),[this](int first, int second){ return first < second; } );
-
-    word_position_map::iterator it1 = p1.begin();
-    word_position_map::iterator it2 = p2.begin();
-
-    while(it1 != p1.end() && it2 != p2.end())
-    {
-        if(it1->first == it2->first)
-        {
-            result.push_back(it1->first);
-            it1++;
-            it2++;
-        }
-        else if(it1->first < it2->first)
-                it1++;
-        else it2++;
-    }
-    return true;
-} */
-
 /**
  * @brief Performs intersection between vectors of docID
  * @param [in] past Actual vector of docID
@@ -225,7 +195,7 @@ auto func = [](word_position_map en)
 /**
  * @brief Performs intersection with multiple quaries
  * @param [in] quary Vector of quaries(strings, means words) that need to be intersected
- * @preturn result Resulted vector of docID
+ * @return result Resulted vector of docID
  */
 vector<int> InvertIndex::MultipleIntersect(vector<string> quary)
 {
@@ -236,11 +206,7 @@ vector<int> InvertIndex::MultipleIntersect(vector<string> quary)
         return get_tf(first) > get_tf(second);
     };
 
-
-
     sort(quary.begin(), quary.end(), comp);
-    // word_position_map temp_map;
-    // vector<string> cycle_temp_map;
 
     vector<int> result = func(index[quary.back()]);
     quary.pop_back();
@@ -293,7 +259,6 @@ float InvertIndex::get_idf(string word_instance)
 float InvertIndex::get_smoothed_idf(string word_instance)
 {
     int size = index[word_instance].size();
-    cout<<"Size: "<<size<<endl;
     return log( (document_count - size + 0.5) / (size + 0.5) );
 }
 
@@ -328,7 +293,7 @@ float InvertIndex::BM25_kernel(string word, int document)
     float b = 0.75;
     float numerator = get_tfd(word, document) * (k + 1) * get_idf(word);
     float denumenator =  get_tfd(word, document) + k * (1 - b  + b * doc_length[document] / average_doc_length);
-    return numerator / denumenator;
+    return get_smoothed_idf(word) * numerator / denumenator;
 }
 /**
  * @brief Computes BM25 ranking function for quary
@@ -388,8 +353,6 @@ vector< pair<float, string> > InvertIndex::find(vector<string> quary)
 
      sort(result.begin(), result.end());
      return result;
-    /* for(vector< pair<float, string> >::iterator it=result.begin(); it != result.end(); it++)
-        cout<<it->second<<" "<<it->first<<endl; */
 }
 
 /**
@@ -401,23 +364,11 @@ void InvertIndex::save(SaverData& saver)
     saver.save(this);
 }
 
+/**
+ * @brief Loads the inverted index
+ * @param saver Object of SaverData famaly classess,
+ */ 
 void InvertIndex::load(SaverData& saver)
 {
     saver.load(this);
 }
-
-/* void TextFileSaverData::save(InvertIndex *instance)
-{
-    write_simple_map(instance->GetD2L(), table_len);
-
-}
-
-template<class mapType>
-void TextFileSaverData::write_simple_map(mapType map, string file_name)
-{
-    ofstream myfile;
-    myfile.open (path_ + file_name, ios::out);
-    for(auto i: map)
-        myfile<<i.first<<" "<<i.second<<endl;
-    myfile.close();
-} */

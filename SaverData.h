@@ -4,6 +4,7 @@
 #include "InvertIndex.h"
 #include <iostream>
 #include <fstream>
+#include "utils.hpp"
 
 using namespace std;
 
@@ -17,28 +18,28 @@ class SaverData
     virtual void save(InvertIndex *instance)=0;
     virtual void load(InvertIndex *instance)=0;
     //virtual ~SaverData();
-    string path_;
+    string dir_path;
     protected:
 
 };
 
-class TextFileSaverData : public SaverData 
+class BinarySaverData : public SaverData 
 {
     
     public:
-        TextFileSaverData(string path);
+        BinarySaverData(string path);
         void save(InvertIndex *instance)  override;
         void load(InvertIndex *instance) override;
 
-        template<class mapType>
-        void write_simple_map(mapType map, string file_name);
+        inverted_list load_index();
+        void save_index(inverted_list index);
 
-        map<int, string > read_is_map(string filename);
-        map<string, int > read_si_map(string filename);
-        map<int, float > read_if_map(string filename);
-
-        string path_;
-        string table = "table.txt", table_len = "table_len.txt";
+        string dir_path;
+        string index_file = dir_path + "index.bin";
+        string doc2len_file = dir_path + "D2L.txt";
+        string num2doc_file = dir_path + "num2doc";
+        string doc2num_file = dir_path + "doc2num";
+        string other_file = dir_path + "other.txt";
         
 };
 
