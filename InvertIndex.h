@@ -37,7 +37,7 @@ class InvertIndex
         InvertIndex(string path, string ext);
         virtual ~InvertIndex();
 
-        bool build_index();
+        bool indexing(doc_list& files);
         void threadIndexing(vector<string> &files, inverted_list &index);
         vector<int> intersect(vector<int> past, string q2);
         vector<int> MultipleIntersect(vector<string> quary);

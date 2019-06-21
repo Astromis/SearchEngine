@@ -9,5 +9,6 @@
 * - [ ] Make saving with zipping
 - [ ] Produce the nearest quaries.
 - [ ] Use word embeddings to improve retrieval quality (if it woulbe be) 
+
 Notes:
 Function for saving a general inverted list was created. Need to make an order into structure and make complite the rest of daving process.

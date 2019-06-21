@@ -6,7 +6,6 @@
 
 mutex mut;
 
-
 //TODO: 
 // make tokenization (boost?)
 // what does program should do if amount of files would be much more then memory?
@@ -37,25 +36,25 @@ InvertIndex::~InvertIndex()
  * and colect tokens.
  * @return True if index has been built successifully
  */
-bool InvertIndex::build_index()
+
+bool InvertIndex::indexing(doc_list& files)
 {
-    doc_list f;
-    get_dirs(extention ,pathfolder, f);
-    document_count = f.size();
+    doc_list files;
+    get_dirs(extention ,pathfolder, files);
+    
+    document_count = files.size();
     for (unsigned int i = 0;i < document_count;i++)
     {
         ifstream in;
-        in.open(f[i].c_str(), ifstream::in);
+        in.open(files[i].c_str(), ifstream::in);
         string word;
         int word_count = 0;
         while (in >> word)
         {
             //add conditions, that cut all
-            mut.lock();
-            num2doc[i] = f[i].c_str();
-            doc2num[f[i].c_str()] = i;
+            num2doc[i] = files[i].c_str();
+            doc2num[files[i].c_str()] = i;
             index[word][i].push_back((int)(in.tellg()) - (word.length()));
-            mut.unlock();
             word_count++;
         }
         doc_length[i] = word_count;
@@ -68,76 +67,6 @@ bool InvertIndex::build_index()
     return true;
 }
 
-void InvertIndex::threadIndexing(vector<string> &files, inverted_list &index)
-{
-    vector<string> a(files.begin(), files.begin() + files.size()/ 2);
-    vector<string> b(files.begin() + files.size()/ 2, files.end());
-
-/*     thread thread1(build_index, ref(a));
-    thread thread2(build_index, ref(b));
-    thread1.join();
-    thread2.join(); */
-}
-
-/**
- * @breif Gef files and dirs in one dir
- * @param [in] ext Extention of file that need to collect
- * @param [in] dir Dir path
- * @param [in] files Files, which contains in dir
- * @param [in] dirs Dirs,  which contains in dr
- * @return 0 If everithing is ok
- */
-int InvertIndex::getdir (const string ext, const string dir, vector<string> &files, queue<string> &dirs)
-{
-    DIR *dp;
-    struct dirent *dirp;
-    if((dp  = opendir(dir.c_str())) == NULL)
-    {
-        cout << "Error(" << errno << ") opening " << dir << endl;
-        return errno;
-    }
-
-    while ((dirp = readdir(dp)) != NULL)
-    {
-        if(dirp->d_type == DT_DIR && string(dirp->d_name) != "." && string(dirp->d_name) != "..")
-
-            dirs.push(dir+"/"+string(dirp->d_name));
-        else
-        //This condition is for the exact file extension. If it is not present, all file names will be appended to a vector.
-        if(ext != "")
-        {
-            if(string(dirp->d_name).find(ext+"\0") != -1)
-                files.push_back(dir+"/"+string(dirp->d_name));
-        }
-        else
-            if(string(dirp->d_name) != "." && string(dirp->d_name) != "..")
-                files.push_back(dir+"/"+string(dirp->d_name));
-    }
-    closedir(dp);
-    return 0;
-}
-
-/**
- * @brief Collects all files, staring with some dir
- * @param [in] ext Extention of file that need to collect
- * @param [in] start_dir Entry dir path
- * @param [in/out] files Files, which contains in dir
- * @return True If everithing is ok
- */
-bool InvertIndex::get_dirs(const string ext, const string start_dir, vector<string> &files)
-{
-    queue<string> dirs = queue<string>();
-    string next_dir;
-
-    getdir(ext, start_dir, files, dirs);
-    while(dirs.size() != 0)
-    {
-        next_dir = dirs.front();
-        dirs.pop();
-        getdir(ext, next_dir, files, dirs);
-    }
-    return true;
-}
 
 /**
  * @brief Performs intersection between vectors of docID
