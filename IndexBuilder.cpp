@@ -106,3 +106,12 @@ bool IndexBuilder::get_dirs(const string ext, const string start_dir, vector<str
     }
     return true;
 }
+
+
+void IndexBuilder::get_memory_info()
+{
+    struct sysinfo_st* info;
+    sysinfo(info);
+
+
+};
