@@ -1,6 +1,27 @@
 #include "IndexBuilder.hpp"
 
 
+IndexBuilder::IndexBuilder()
+{
+
+}
+
+IndexBuilder::IndexBuilder(int thread_num, string start_path, string ext)
+{
+    thread_count = thread_num;
+    start_path = start_path;
+    ext = ext;
+    get_dirs(ext, start_path, files);
+    threads.resize(thread_num);
+}
+
+
+IndexBuilder::~IndexBuilder()
+{
+
+}
+
+
 /**
  * @brief Create an inverted index for a given instane of InvertedIndex class
  * Starting with entry point, go through the all directores 
@@ -11,7 +32,6 @@
 bool IndexBuilder::build_index(InvertIndex idx)
 {
     doc_list f;
-    get_dirs(extention ,pathfolder, f);
     
     idx.indexing(f);
 }

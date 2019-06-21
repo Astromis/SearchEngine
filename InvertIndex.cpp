@@ -20,8 +20,8 @@ InvertIndex::InvertIndex()
 
 InvertIndex::InvertIndex(string path, string ext)
 {
-    pathfolder = path;  
-    extention = ext;
+    /* pathfolder = path;  
+    extention = ext; */
     //ctor
 }
 
@@ -38,10 +38,7 @@ InvertIndex::~InvertIndex()
  */
 
 bool InvertIndex::indexing(doc_list& files)
-{
-    doc_list files;
-    get_dirs(extention ,pathfolder, files);
-    
+{  
     document_count = files.size();
     for (unsigned int i = 0;i < document_count;i++)
     {
