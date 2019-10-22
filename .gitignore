@@ -34,3 +34,11 @@
 # Miscallinious
 *.cxx
 *.py
+.vscode/
+test_fol
+D2L.txt
+index.bin
+doc2num
+num2doc
+other.txt
+test

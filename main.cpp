@@ -14,7 +14,7 @@ int main(int argc, char **argv)
     clock_t begin = clock();
     inv.build_index();
     clock_t end = clock();
-    cout<<"Ellapsed time: "<<double(end - begin) / CLOCKS_PER_SEC<<endl;
+    cout<<"Elapsed time: "<<double(end - begin) / CLOCKS_PER_SEC<<endl;
     vector<string> res;
    
     for(auto& i:  inv.find(vector<string> {"int", "#include" }))

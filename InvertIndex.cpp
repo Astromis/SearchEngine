@@ -80,7 +80,7 @@ void InvertIndex::threadIndexing(vector<string> &files, inverted_list &index)
 }
 
 /**
- * @breif Gef files and dirs in one dir
+ * @brief Gef files and dirs in one dir
  * @param [in] ext Extention of file that need to collect
  * @param [in] dir Dir path
  * @param [in] files Files, which contains in dir
@@ -248,8 +248,8 @@ size_t InvertIndex::get_tfd(string word_instance, int doc_instance)
  */
 float InvertIndex::get_idf(string word_instance)
 {
-    int size = index[word_instance].size();
-    return log(document_count/size);
+    float size = index[word_instance].size();
+    return log(document_count/size);;
 
 }
 
@@ -258,7 +258,7 @@ float InvertIndex::get_idf(string word_instance)
  */
 float InvertIndex::get_smoothed_idf(string word_instance)
 {
-    int size = index[word_instance].size();
+    float size = index[word_instance].size();
     return log( (document_count - size + 0.5) / (size + 0.5) );
 }
 
@@ -291,9 +291,9 @@ float InvertIndex::BM25_kernel(string word, int document)
 {
     float k = 2;
     float b = 0.75;
-    float numerator = get_tfd(word, document) * (k + 1) * get_idf(word);
-    float denumenator =  get_tfd(word, document) + k * (1 - b  + b * doc_length[document] / average_doc_length);
-    return get_smoothed_idf(word) * numerator / denumenator;
+    float numerator = get_tfd(word, document) * (k + 1) * get_smoothed_idf(word);
+    float denominator =  get_tfd(word, document) + k * (1 - b  + b * doc_length[document] / average_doc_length);
+    return get_smoothed_idf(word) * numerator / denominator;
 }
 /**
  * @brief Computes BM25 ranking function for quary
