@@ -21,14 +21,10 @@ struct sysinfo_st
     unsigned long freehigh;  /* Available high memory size */
     unsigned int mem_unit;   /* Memory unit size in bytes */
     char _f[20-2*sizeof(long)-sizeof(int)]; /* Padding for libc5 */
-}
+};
     
 class IndexBuilder
 {
-    IndexBuilder();
-    IndexBuilder(int thread_num, string start_path, string ext);
-
-    ~IndexBuilder();
     private:
     int thread_count;
     vector<InvertIndex> index_vector;
@@ -42,8 +38,12 @@ class IndexBuilder
     int getdir(const string ext, const string dir, vector<string> &files, queue<string> &dirs);
     
     public:
+    IndexBuilder();
+    IndexBuilder(string start_path, string ext = "", int thread_num=1);
+    ~IndexBuilder();
+    
 
     void threadIndexing(vector<string> &files, inverted_list &index);
-    bool build_index(InvertIndex idx);
+    bool build_index(InvertIndex* idx);
 
 };

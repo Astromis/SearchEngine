@@ -1,7 +1,5 @@
 #include "InvertIndex.h"
 #include "SaverData.h"
-#include "IndexBuilder.hpp"
-
 #include <map>
 #include <ctime>
 
@@ -12,10 +10,9 @@ int main(int argc, char **argv)
         cout<<"Input parameters is not enough."<<endl;
         return 0;
     }
-    InvertIndex inv;
-    IndexBuilder builder_t(string(argv[1]), "", 1);
+    InvertIndex inv(string(argv[1]), "");
     clock_t begin = clock();
-    builder_t.build_index(&inv);
+    inv.build_index();
     clock_t end = clock();
     cout<<"Ellapsed time: "<<double(end - begin) / CLOCKS_PER_SEC<<endl;
     vector<string> res;

@@ -6,7 +6,7 @@ IndexBuilder::IndexBuilder()
 
 }
 
-IndexBuilder::IndexBuilder(int thread_num, string start_path, string ext)
+IndexBuilder::IndexBuilder(string start_path, string ext, int thread_num)
 {
     thread_count = thread_num;
     start_path = start_path;
@@ -26,14 +26,13 @@ IndexBuilder::~IndexBuilder()
  * @brief Create an inverted index for a given instane of InvertedIndex class
  * Starting with entry point, go through the all directores 
  * and colect tokens.
- * @return True if index has been built successifully
+ * @return True if index has been built successfully
  */
 
-bool IndexBuilder::build_index(InvertIndex idx)
+bool IndexBuilder::build_index(InvertIndex* idx)
 {
     doc_list f;
-    
-    idx.indexing(f);
+    idx->indexing(files);
 }
 
 void IndexBuilder::threadIndexing(vector<string> &files, inverted_list &index)
@@ -48,7 +47,7 @@ void IndexBuilder::threadIndexing(vector<string> &files, inverted_list &index)
 }
 
 /**
- * @breif Gef files and dirs in one dir
+ * @brief Gef files and dirs in one dir
  * @param [in] ext Extention of file that need to collect
  * @param [in] dir Dir path
  * @param [in] files Files, which contains in dir
@@ -108,10 +107,10 @@ bool IndexBuilder::get_dirs(const string ext, const string start_dir, vector<str
 }
 
 
-void IndexBuilder::get_memory_info()
+/* void IndexBuilder::get_memory_info()
 {
     struct sysinfo_st* info;
     sysinfo(info);
 
 
-};
+}; */

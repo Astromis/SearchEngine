@@ -37,7 +37,7 @@ class InvertIndex
         InvertIndex(string path, string ext);
         virtual ~InvertIndex();
 
-        bool indexing(doc_list& files);
+        bool build_index();
         void threadIndexing(vector<string> &files, inverted_list &index);
         vector<int> intersect(vector<int> past, string q2);
         vector<int> MultipleIntersect(vector<string> quary);
@@ -76,9 +76,9 @@ class InvertIndex
         float GetAverLen() { return average_doc_length; }
 
         void SetIndex(inverted_list& list) {index = list;}
-        //void SetPathfolder(string path) {pathfolder = path;}
+        void SetPathfolder(string path) {pathfolder = path;}
         void SetN2D(map<int, string> n2d) {num2doc = n2d;}
-        void SetD2N(map<string, int> d2n) {doc2num = d2n;}
+        void SetD2N(map<string, int> d2n) {doc2num=d2n;}
         void SetD2L(map<int, float> d2l) {doc_length = d2l;}
         void SetDocCount(long dc) {document_count = dc;}
         void SetAvrDocLen(float adl) {average_doc_length = adl;}
@@ -90,9 +90,9 @@ class InvertIndex
         // inverted index - common data structure
         inverted_list index;
         // path at the begging of building of index
-        //string pathfolder;
+        string pathfolder;
         // file extentions that needs to consider
-        //string extention;
+        string extention;
 
         // tables that defines relations between documents and its indeces
         map<int, string > num2doc;
