@@ -22,8 +22,8 @@ using namespace std;
 
 // this vector contains an order number of word in text
 typedef vector<int> position_vector;
-// this map contains documents as a key and position vectors as a value
-typedef map<int,position_vector> word_position_map;
+// this map contains documents (its ID) as a key and position vectors as a value
+typedef map<int, position_vector> word_position_map;
 // this is finally inverted list
 typedef map <string, word_position_map > inverted_list;
 typedef vector<string> doc_list;
@@ -65,6 +65,9 @@ class InvertIndex
         
         void save(SaverData& saver);
         void load(SaverData& saver);
+
+        void clear_index();
+
 
         vector<string> operator[](string q);
 

@@ -3,7 +3,7 @@
 #include "InvertIndex.h"
 #include "SaverData.h"
 #include <sys/sysinfo.h>
-
+#include <fstream>
 
 
 struct sysinfo_st 
@@ -29,21 +29,24 @@ class IndexBuilder
     int thread_count;
     vector<InvertIndex> index_vector;
     vector<thread> threads;
-    doc_list files;
+    doc_list collection;
+    map<string, int> file_sizes;
 
     string start_path;
     string ext;
 
     bool get_dirs(const string ext, const string start_dir, vector<string> &files);
     int getdir(const string ext, const string dir, vector<string> &files, queue<string> &dirs);
+    bool build_index(InvertIndex* idx, doc_list files);
     
     public:
     IndexBuilder();
     IndexBuilder(string start_path, string ext = "", int thread_num=1);
     ~IndexBuilder();
     
-
-    void threadIndexing(vector<string> &files, inverted_list &index);
-    bool build_index(InvertIndex* idx);
+    void BSBITest();
+    void threadIndexing(doc_list &files, inverted_list &index);
+    
+    bool index_collection(InvertIndex* idx);
 
 };

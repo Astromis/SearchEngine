@@ -37,6 +37,7 @@
 
 #VSCode files
 .vscode/
+test_large/
 D2L.txt
 doc2num
 index.bin

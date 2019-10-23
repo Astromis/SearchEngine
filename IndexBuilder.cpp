@@ -11,7 +11,7 @@ IndexBuilder::IndexBuilder(string start_path, string ext, int thread_num)
     thread_count = thread_num;
     start_path = start_path;
     ext = ext;
-    get_dirs(ext, start_path, files);
+    get_dirs(ext, start_path, collection);
     threads.resize(thread_num);
 }
 
@@ -29,9 +29,8 @@ IndexBuilder::~IndexBuilder()
  * @return True if index has been built successfully
  */
 
-bool IndexBuilder::build_index(InvertIndex* idx)
+bool IndexBuilder::build_index(InvertIndex* idx, doc_list files)
 {
-    doc_list f;
     idx->indexing(files);
 }
 
@@ -44,6 +43,12 @@ void IndexBuilder::threadIndexing(vector<string> &files, inverted_list &index)
     thread thread2(build_index, ref(b));
     thread1.join();
     thread2.join(); */
+}
+
+ifstream::pos_type filesize(const char* filename)
+{
+    std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
+    return in.tellg(); 
 }
 
 /**
@@ -74,11 +79,19 @@ int IndexBuilder::getdir (const string ext, const string dir, vector<string> &fi
         if(ext != "")
         {
             if(string(dirp->d_name).find(ext+"\0") != -1)
-                files.push_back(dir+"/"+string(dirp->d_name));
+            {
+                string filename = dir+"/"+string(dirp->d_name);
+                files.push_back(filename);
+                file_sizes[filename] = filesize(filename.c_str());
+            }
         }
         else
             if(string(dirp->d_name) != "." && string(dirp->d_name) != "..")
-                files.push_back(dir+"/"+string(dirp->d_name));
+            {
+                string filename = dir+"/"+string(dirp->d_name);
+                files.push_back(filename);
+                file_sizes[filename] = filesize(filename.c_str());
+            }
     }
     closedir(dp);
     return 0;
@@ -106,6 +119,35 @@ bool IndexBuilder::get_dirs(const string ext, const string start_dir, vector<str
     return true;
 }
 
+template<typename T>
+vector<T> slice(vector<T> const &v, int s, int e)
+{
+    auto first = v.cbegin() + s;
+    auto last = v.cbegin() + e + 1;
+
+    vector<T> vec(first, last);
+    return vec;
+
+}
+
+
+bool IndexBuilder::index_collection(InvertIndex* idx)
+{
+    //it is not a good implementation
+    //Here should invoke build_index()
+    idx->indexing(collection);
+    for(auto& i: file_sizes)
+    {
+        cout<<i.first<< " "<< i.second<<endl;
+    }
+}
+
+
+/* void IndexBuilder::BSBITest()
+{
+
+
+ } */
 
 /* void IndexBuilder::get_memory_info()
 {

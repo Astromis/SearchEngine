@@ -15,10 +15,17 @@ int main(int argc, char **argv)
     InvertIndex inv;
     IndexBuilder builder_t(string(argv[1]), "", 1);
     clock_t begin = clock();
-    builder_t.build_index(&inv);
+    builder_t.index_collection(&inv);
     clock_t end = clock();
     cout<<"Ellapsed time: "<<double(end - begin) / CLOCKS_PER_SEC<<endl;
-    vector<string> res;
+    for(auto& i:  inv.find(vector<string> {"Здравствуйте", "тариф" }))
+        cout<<i.first<<" "<<i.second<<endl; 
+    inv.clear_index();
+
+    builder_t.index_collection(&inv);
+    for(auto& i:  inv.find(vector<string> {"Здравствуйте", "тариф" }))
+        cout<<i.first<<" "<<i.second<<endl; 
+/*     vector<string> res;
    
     for(auto& i:  inv.find(vector<string> {"int", "#include" }))
         cout<<i.first<<" "<<i.second<<endl; 
@@ -32,7 +39,7 @@ int main(int argc, char **argv)
     cout<<"Loading..."<<endl;
     loaded_in.load(saver);
     for(auto& i:  loaded_in.find(vector<string> {"int", "#include" }))
-        cout<<i.first<<" "<<i.second<<endl;
+        cout<<i.first<<" "<<i.second<<endl; */
 
     return 0;
 }

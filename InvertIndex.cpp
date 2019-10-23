@@ -298,3 +298,8 @@ void InvertIndex::load(SaverData& saver)
 {
     saver.load(this);
 }
+
+void InvertIndex::clear_index()
+{
+    index.clear();
+}
