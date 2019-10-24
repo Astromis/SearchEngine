@@ -80,3 +80,24 @@ map<int, float > read_if_map(string filename)
     }
     return tmp;
 }
+
+/**
+ * @brief get the free memory available in the Linux
+ * @return free memory in kB, -1 if somthing went wrong
+ */
+int get_free_memory()
+{
+    FILE * pFile;
+    int amount;
+    char str[50];
+    pFile = fopen ("/proc/meminfo","r");
+    while (fscanf(pFile, "%s\t%d kB\n" , str, &amount) != EOF)
+    {
+        if(string(str) == "MemFree:"){
+            fclose(pFile);
+            return amount;
+        }
+    }
+    fclose(pFile);
+    return -1;
+}

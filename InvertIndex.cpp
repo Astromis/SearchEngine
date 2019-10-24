@@ -16,12 +16,14 @@ mutex mut;
 
 InvertIndex::InvertIndex()
 {
+    doc_id = 0;
 }
 
 InvertIndex::InvertIndex(string path, string ext)
 {
     /* pathfolder = path;  
     extention = ext; */
+    doc_id = 0;
     //ctor
 }
 
@@ -31,16 +33,15 @@ InvertIndex::~InvertIndex()
 }
 
 /**
- * @brief Create an inverted index
- * Starting with entry point, go through the all directores 
- * and colect tokens.
- * @return True if index has been built successifully
+ * @brief Index the files from the vector
+ * @param files the vector of the file paths
+ * @return True if index has been built successfully
  */
 
 bool InvertIndex::indexing(doc_list& files)
 {  
-    document_count = files.size();
-    for (unsigned int i = 0;i < document_count;i++)
+    average_doc_length *= document_count;
+    for (unsigned int i = 0;i < files.size();i++)
     {
         ifstream in;
         in.open(files[i].c_str(), ifstream::in);
@@ -49,14 +50,16 @@ bool InvertIndex::indexing(doc_list& files)
         while (in >> word)
         {
             //add conditions, that cut all
-            num2doc[i] = files[i].c_str();
-            doc2num[files[i].c_str()] = i;
-            index[word][i].push_back((int)(in.tellg()) - (word.length()));
+            num2doc[doc_id] = files[i].c_str();
+            doc2num[files[i].c_str()] = doc_id;
+            index[word][doc_id].push_back((int)(in.tellg()) - (word.length()));
             word_count++;
         }
-        doc_length[i] = word_count;
+        doc_length[doc_id] = word_count;
         average_doc_length += word_count;
         word_count = 0;
+        document_count++;
+        doc_id++;
     }
     average_doc_length /= document_count;
 
@@ -64,6 +67,33 @@ bool InvertIndex::indexing(doc_list& files)
     return true;
 }
 
+/**
+ * @brief index only one file
+ * @param file file need to be indexing
+ * @return true if successfully
+ */
+bool InvertIndex::partial(string file)
+{
+    ifstream in;
+    in.open(file.c_str(), ifstream::in);
+    string word;
+    int word_count = 0;
+    average_doc_length *= document_count;
+    while (in >> word)
+    {
+        //add conditions, that cut all
+        num2doc[doc_id] = file.c_str();
+        doc2num[file.c_str()] = doc_id;
+        index[word][doc_id].push_back((int)(in.tellg()) - (word.length()));
+        word_count++;
+    }
+    doc_length[doc_id] = word_count;
+    average_doc_length += word_count;
+    doc_id++;
+    document_count++;
+    average_doc_length /= document_count;
+
+}
 
 /**
  * @brief Performs intersection between vectors of docID

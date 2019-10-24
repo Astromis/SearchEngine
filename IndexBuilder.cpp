@@ -1,5 +1,5 @@
 #include "IndexBuilder.hpp"
-
+#include "SaverData.h"
 
 IndexBuilder::IndexBuilder()
 {
@@ -142,17 +142,32 @@ bool IndexBuilder::index_collection(InvertIndex* idx)
     }
 }
 
-
-/* void IndexBuilder::BSBITest()
+doc_list IndexBuilder::form_the_doclist()
 {
+    doc_list result;
+    int counter = 0;
+    while(counter < 500000000 || collection.size() == 0)
+    {
+        string file = collection.back();
+        collection.pop_back();
+        result.push_back(file);
+        counter = counter + file_sizes[file];
+    }
+    return result;
+}
 
-
- } */
-
-/* void IndexBuilder::get_memory_info()
+void IndexBuilder::BSBITest()
 {
-    struct sysinfo_st* info;
-    sysinfo(info);
+    InvertIndex index;
+    doc_list result;
+    while( get_free_memory() > (500 * 1024))
+    {
+        string file = collection.back();
+        collection.pop_back();
+        result.push_back(file);
+        //counter = counter + file_sizes[file];
+    }
+    build_index(&index, result);
+    //index.save()
+} 
 
-
-}; */

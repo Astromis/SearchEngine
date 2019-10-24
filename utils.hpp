@@ -18,7 +18,7 @@ void write_simple_map(mapType map, string filename);
 map<int, string > read_is_map(string filename);
 map<string, int > read_si_map(string filename);
 map<int, float > read_if_map(string filename);
-
+int get_free_memory();
 
 /**
  * @brief Write a map to a file

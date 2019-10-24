@@ -2,12 +2,15 @@
 #include "SaverData.h"
 #include "IndexBuilder.hpp"
 
+#include "utils.hpp"
+
 #include <map>
 #include <ctime>
 
 int main(int argc, char **argv)
 {
-    if(argc != 2)
+
+/*     if(argc != 2)
     {
         cout<<"Input parameters is not enough."<<endl;
         return 0;
@@ -24,7 +27,7 @@ int main(int argc, char **argv)
 
     builder_t.index_collection(&inv);
     for(auto& i:  inv.find(vector<string> {"Здравствуйте", "тариф" }))
-        cout<<i.first<<" "<<i.second<<endl; 
+        cout<<i.first<<" "<<i.second<<endl;  */
 /*     vector<string> res;
    
     for(auto& i:  inv.find(vector<string> {"int", "#include" }))

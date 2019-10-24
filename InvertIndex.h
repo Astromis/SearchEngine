@@ -38,6 +38,7 @@ class InvertIndex
         virtual ~InvertIndex();
 
         bool indexing(doc_list& files);
+        bool partial(string file);
         void threadIndexing(vector<string> &files, inverted_list &index);
         vector<int> intersect(vector<int> past, string q2);
         vector<int> MultipleIntersect(vector<string> quary);
@@ -48,8 +49,8 @@ class InvertIndex
         //bool get_word_position_map(word_position_map *response, string &quary);
         //bool get_position_vector(position_vector *response, word_position_map &data, string &quary);
         //utils
-        int getdir (string ext, string dir, vector<string> &files, queue<string> &dirs);
-        bool get_dirs(const string ext, const string start_dir, vector<string> &files);
+        //int getdir (string ext, string dir, vector<string> &files, queue<string> &dirs);
+        //bool get_dirs(const string ext, const string start_dir, vector<string> &files);
 
         // math
         size_t get_tfd(string  word_instance, int doc_instance);
@@ -96,7 +97,7 @@ class InvertIndex
         //string pathfolder;
         // file extentions that needs to consider
         //string extention;
-
+        int doc_id;
         // tables that defines relations between documents and its indeces
         map<int, string > num2doc;
         map<string, int> doc2num;

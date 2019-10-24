@@ -48,10 +48,10 @@ void BinarySaverData::save_index(inverted_list index)
 }
 
 /**
- * @brief General saver fumction that saces all InvertedIndex structure
+ * @brief General saver function that saces all InvertedIndex structure
  * @param [in] Pointer on structure. Typically "this"
  */
-void BinarySaverData::save(InvertIndex *instance)
+void BinarySaverData::save(InvertIndex *instance, string filename)
 {
 
     write_simple_map(instance->GetD2L(), doc2len_file);
@@ -104,7 +104,7 @@ inverted_list BinarySaverData::load_index()
  * @brief General loader function that loads all InvertedIndex structure
  * @param [in] Pointer on structure. Typically "this"
  */
-void BinarySaverData::load(InvertIndex *instance)
+void BinarySaverData::load(InvertIndex *instance, string filename)
 {
     //TODO: Try to make index loading in one step.
     inverted_list tmp = load_index();

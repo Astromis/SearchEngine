@@ -31,14 +31,15 @@ class IndexBuilder
     vector<thread> threads;
     doc_list collection;
     map<string, int> file_sizes;
-
+    //BinarySaverData saver;
     string start_path;
     string ext;
 
     bool get_dirs(const string ext, const string start_dir, vector<string> &files);
     int getdir(const string ext, const string dir, vector<string> &files, queue<string> &dirs);
     bool build_index(InvertIndex* idx, doc_list files);
-    
+    doc_list form_the_doclist();
+
     public:
     IndexBuilder();
     IndexBuilder(string start_path, string ext = "", int thread_num=1);
@@ -48,5 +49,6 @@ class IndexBuilder
     void threadIndexing(doc_list &files, inverted_list &index);
     
     bool index_collection(InvertIndex* idx);
+    
 
 };
