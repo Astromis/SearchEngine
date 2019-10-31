@@ -6,8 +6,15 @@
 #include <fstream>
 #include "utils.hpp"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <bits/stdc++.h> 
+
 using namespace std;
 
+
+bool check_dir(const char *dir_path);
+bool create_dir(const char *dir_path);
 
 class InvertIndex;
 
@@ -15,8 +22,8 @@ class SaverData
 {
     public:
 
-    virtual void save(InvertIndex *instance, string filename)=0;
-    virtual void load(InvertIndex *instance, string filename)=0;
+    virtual void save(InvertIndex *instance, string file_prefix)=0;
+    virtual void load(InvertIndex *instance, string file_prefix)=0;
     //virtual ~SaverData();
     string root_dir_path;
     protected:
@@ -35,19 +42,19 @@ class BinarySaverData : public SaverData
     public:
         BinarySaverData();
         BinarySaverData(string path);
-        void save(InvertIndex *instance, string filename)  override;
-        void load(InvertIndex *instance, string filename) override;
+        void save(InvertIndex *instance, string file_prefix)  override;
+        void load(InvertIndex *instance, string file_prefix) override;
 
-        inverted_list load_index();
-        void save_index(inverted_list index);
+        inverted_list load_index(string dir_instance);
+        void save_index(inverted_list index, string dir_instance);
 
-        void create_dir();
-        bool check_dir();
+        
 
         void SetRootDir();
 
         
 };
+
 
 /* class DatabaseSaverData : public SaverData 
 {

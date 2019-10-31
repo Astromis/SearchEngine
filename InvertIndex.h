@@ -37,8 +37,10 @@ class InvertIndex
         InvertIndex(string path, string ext);
         virtual ~InvertIndex();
 
-        bool indexing(doc_list& files);
-        bool partial(string file);
+
+        bool indexing_file(string file);
+        bool indexing_collection(doc_list& files);
+
         void threadIndexing(vector<string> &files, inverted_list &index);
         vector<int> intersect(vector<int> past, string q2);
         vector<int> MultipleIntersect(vector<string> quary);
@@ -64,8 +66,8 @@ class InvertIndex
         //int ranking(string quary);
         //int ranking(vector<string> quary);
         
-        void save(SaverData& saver);
-        void load(SaverData& saver);
+        void save(SaverData& saver, string dir_instance);
+        void load(SaverData& saver, string dir_instance);
 
         void clear_index();
 

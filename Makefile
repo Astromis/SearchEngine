@@ -2,7 +2,7 @@
 CC=g++
 CFLAGS=-c -Wall -std=c++11 -g
 
-INCLUDES=-I./includes/
+#INCLUDES=-I./includes/
 
 PYTHONI = -I/usr/include/python2.7/
 PYTHONL = -Xlinker -export-dynamic

@@ -7,8 +7,36 @@
  */
 BinarySaverData::BinarySaverData(string path)
 {
-    dir_path = path; 
+    root_dir_path = path;
+    if(check_dir(root_dir_path.c_str()) == false)
+        if(create_dir(root_dir_path.c_str()) == false)
+        {
+            cout<<"Can't create root directory for storing data"<<endl;
+            exit(-1);
+        }
+
 }
+
+bool check_dir(const char *dir_path)
+{
+    struct stat info;
+
+    if( stat( dir_path, &info ) != 0 )
+        return false;
+    else if( info.st_mode & S_IFDIR ) 
+        return true;
+    else
+        return false;
+}
+
+bool create_dir(const char *dir_path)
+{
+    if (mkdir(dir_path, 0777) == -1) 
+        return false;
+    else
+        return true; 
+}
+
 
 /**
  * @brief Save inverted index as binaty to a file
@@ -19,10 +47,9 @@ BinarySaverData::BinarySaverData(string path)
  * amount of position -> p,p,p,... -> doc -> amount of position -> 
  * ... -> word -> ...
 */
-
-void BinarySaverData::save_index(inverted_list index)
+void BinarySaverData::save_index(inverted_list index, string dir_instance)
 {
-    ofstream f1(index_file, ios::binary);
+    ofstream f1(root_dir_path + dir_instance + index_file, ios::binary);
     size_t temp_size, amount_of_doc = 0;
     //amount of words
     temp_size = index.size();
@@ -51,15 +78,21 @@ void BinarySaverData::save_index(inverted_list index)
  * @brief General saver function that saces all InvertedIndex structure
  * @param [in] Pointer on structure. Typically "this"
  */
-void BinarySaverData::save(InvertIndex *instance, string filename)
+void BinarySaverData::save(InvertIndex *instance, string dir_instance)
 {
 
-    write_simple_map(instance->GetD2L(), doc2len_file);
-    write_simple_map(instance->GetN2D(), num2doc_file);
-    write_simple_map(instance->GetD2N(), doc2num_file);
-    save_index(instance->GetIndex());
+    if(check_dir((root_dir_path + dir_instance).c_str()) == false)
+        if(create_dir(root_dir_path.c_str()) == false)
+        {
+            cout<<"Can't create directory for binary saving data"<<endl;
+            exit(-1);
+        }
+    write_simple_map(instance->GetD2L(), root_dir_path + dir_instance + doc2len_file);
+    write_simple_map(instance->GetN2D(), root_dir_path + dir_instance + num2doc_file);
+    write_simple_map(instance->GetD2N(), root_dir_path + dir_instance + doc2num_file);
+    save_index(instance->GetIndex(), root_dir_path + dir_instance + index_file);
 
-    ofstream f(other_file, ios::out);
+    ofstream f(root_dir_path + dir_instance + other_file, ios::out);
     f<<instance->GetAverLen()<<endl;
     f<<instance->GetDocCount()<<endl;
     f.close();
@@ -70,9 +103,9 @@ void BinarySaverData::save(InvertIndex *instance, string filename)
  * @brief Load inverted index
  * @return loaded inverted index
  */
-inverted_list BinarySaverData::load_index()
+inverted_list BinarySaverData::load_index(string dir_instance)
 {
-    ifstream f1(index_file, ios::binary);
+    ifstream f1(root_dir_path + dir_instance + index_file, ios::binary);
     inverted_list test;
     string word, tmp;
     int doc_id, pos_id;
@@ -104,16 +137,20 @@ inverted_list BinarySaverData::load_index()
  * @brief General loader function that loads all InvertedIndex structure
  * @param [in] Pointer on structure. Typically "this"
  */
-void BinarySaverData::load(InvertIndex *instance, string filename)
+void BinarySaverData::load(InvertIndex *instance, string dir_instance)
 {
-    //TODO: Try to make index loading in one step.
-    inverted_list tmp = load_index();
+    if(check_dir( (root_dir_path + dir_instance).c_str() ) == false)
+    {
+        cout<<"Can't find the dir with the data"<<endl;
+        exit(-1);
+    }
+    inverted_list tmp = load_index(root_dir_path + dir_instance);
     instance->SetIndex(tmp);
-    instance->SetN2D(read_is_map(num2doc_file));
-    instance->SetD2N(read_si_map(doc2num_file));
-    instance->SetD2L(read_if_map(doc2len_file));
+    instance->SetN2D(read_is_map(root_dir_path + dir_instance + num2doc_file));
+    instance->SetD2N(read_si_map(root_dir_path + dir_instance + doc2num_file));
+    instance->SetD2L(read_if_map(root_dir_path + dir_instance + doc2len_file));
 
-    ifstream f(other_file);
+    ifstream f(root_dir_path + dir_instance + other_file);
     string tmpf, tmpl;
     f>>tmpf;
     f>>tmpl;

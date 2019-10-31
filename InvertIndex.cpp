@@ -32,53 +32,19 @@ InvertIndex::~InvertIndex()
     //dtor
 }
 
-/**
- * @brief Index the files from the vector
- * @param files the vector of the file paths
- * @return True if index has been built successfully
- */
-
-bool InvertIndex::indexing(doc_list& files)
-{  
-    average_doc_length *= document_count;
-    for (unsigned int i = 0;i < files.size();i++)
-    {
-        ifstream in;
-        in.open(files[i].c_str(), ifstream::in);
-        string word;
-        int word_count = 0;
-        while (in >> word)
-        {
-            //add conditions, that cut all
-            num2doc[doc_id] = files[i].c_str();
-            doc2num[files[i].c_str()] = doc_id;
-            index[word][doc_id].push_back((int)(in.tellg()) - (word.length()));
-            word_count++;
-        }
-        doc_length[doc_id] = word_count;
-        average_doc_length += word_count;
-        word_count = 0;
-        document_count++;
-        doc_id++;
-    }
-    average_doc_length /= document_count;
-
-    cout<<"Indexing complete in thread id "<<this_thread::get_id()<<". Size: "<< index.size()<<endl;   
-    return true;
-}
 
 /**
  * @brief index only one file
  * @param file file need to be indexing
  * @return true if successfully
  */
-bool InvertIndex::partial(string file)
+bool InvertIndex::indexing_file(string file)
 {
+    average_doc_length *= document_count;
     ifstream in;
     in.open(file.c_str(), ifstream::in);
     string word;
     int word_count = 0;
-    average_doc_length *= document_count;
     while (in >> word)
     {
         //add conditions, that cut all
@@ -89,11 +55,33 @@ bool InvertIndex::partial(string file)
     }
     doc_length[doc_id] = word_count;
     average_doc_length += word_count;
-    doc_id++;
+    word_count = 0;
     document_count++;
+    doc_id++;
     average_doc_length /= document_count;
 
 }
+
+
+/**
+ * @brief Index the files from the vector
+ * @param files the vector of the file paths
+ * @return True if index has been built successfully
+ */
+
+bool InvertIndex::indexing_collection(doc_list& files)
+{  
+    
+    for (unsigned int i = 0;i < files.size();i++)
+    {
+        indexing_file(files[i]);
+    }
+
+    cout<<"Indexing complete in thread id "<<this_thread::get_id()<<". Size: "<< index.size()<<endl;   
+    return true;
+}
+
+
 
 /**
  * @brief Performs intersection between vectors of docID
@@ -315,18 +303,18 @@ vector< pair<float, string> > InvertIndex::find(vector<string> quary)
  * @brief Saves the inverted index
  * @param saver Object of SaverData famaly classess,
  */ 
-void InvertIndex::save(SaverData& saver)
+void InvertIndex::save(SaverData& saver, string dir_instance)
 {
-    saver.save(this);
+    saver.save(this, dir_instance);
 }
 
 /**
  * @brief Loads the inverted index
  * @param saver Object of SaverData famaly classess,
  */ 
-void InvertIndex::load(SaverData& saver)
+void InvertIndex::load(SaverData& saver, string dir_instance)
 {
-    saver.load(this);
+    saver.load(this, dir_instance);
 }
 
 void InvertIndex::clear_index()

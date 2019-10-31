@@ -31,7 +31,12 @@ IndexBuilder::~IndexBuilder()
 
 bool IndexBuilder::build_index(InvertIndex* idx, doc_list files)
 {
-    idx->indexing(files);
+    idx->indexing_collection(files);
+}
+
+bool IndexBuilder::build_index_from_collection(InvertIndex* idx)
+{
+    idx->indexing_collection(collection);
 }
 
 void IndexBuilder::threadIndexing(vector<string> &files, inverted_list &index)
@@ -119,6 +124,7 @@ bool IndexBuilder::get_dirs(const string ext, const string start_dir, vector<str
     return true;
 }
 
+ 
 template<typename T>
 vector<T> slice(vector<T> const &v, int s, int e)
 {
@@ -130,17 +136,6 @@ vector<T> slice(vector<T> const &v, int s, int e)
 
 }
 
-
-bool IndexBuilder::index_collection(InvertIndex* idx)
-{
-    //it is not a good implementation
-    //Here should invoke build_index()
-    idx->indexing(collection);
-    for(auto& i: file_sizes)
-    {
-        cout<<i.first<< " "<< i.second<<endl;
-    }
-}
 
 doc_list IndexBuilder::form_the_doclist()
 {
@@ -160,14 +155,19 @@ void IndexBuilder::BSBITest()
 {
     InvertIndex index;
     doc_list result;
-    while( get_free_memory() > (500 * 1024))
+    doc_list tmp = collection;
+    BinarySaverData saver("./temp/");
+    while(tmp.size() != 0)
     {
-        string file = collection.back();
-        collection.pop_back();
-        result.push_back(file);
-        //counter = counter + file_sizes[file];
+        // get some name for next directory
+        while( get_free_memory() > (500 * 1024) || tmp.size() == 0)
+        {
+            string file = tmp.back();
+            tmp.pop_back();
+            index.indexing_file(file);
+        }
+        //index.save()
+    
     }
-    build_index(&index, result);
-    //index.save()
 } 
 
