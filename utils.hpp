@@ -29,11 +29,16 @@ int get_free_memory();
 template<class mapType>
 void write_simple_map(mapType map, string filename)
 {
-    ofstream myfile;
-    myfile.open (filename, ios::out);
+    ofstream file;
+    if(file.is_open() == false)
+    {
+        cout<< "Error opening file "<<filename<<endl;
+        exit(-1);
+    }
+    file.open (filename, ios::out);
     for(auto i: map)
-        myfile<<i.first<<" "<<i.second<<endl;
-    myfile.close();
+        file<<i.first<<" "<<i.second<<endl;
+    file.close();
 }
 
 

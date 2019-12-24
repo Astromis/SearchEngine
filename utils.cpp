@@ -42,6 +42,11 @@ map<int, string > read_is_map(string filename)
     map<int, string > tmp;
     string num, str;
     file.open(filename, ios::out);
+    if(file.is_open() == false)
+    {
+        cout<< "Error opening file "<<filename<<endl;
+        exit(-1);
+    }
     while(file.eof() != true)
     {
         file>>num;
@@ -57,6 +62,11 @@ map<string, int > read_si_map(string filename)
     map<string, int > tmp;
     string num, str;
     file.open(filename, ios::out);
+    if(file.is_open() == false)
+    {
+        cout<< "Error opening file "<<filename<<endl;
+        exit(-1);
+    }
     while(file.eof() != true)
     {
         file>>str;
@@ -72,6 +82,11 @@ map<int, float > read_if_map(string filename)
     map<int, float > tmp;
     string numi, numf;
     file.open(filename, ios::out);
+    if(file.is_open() == false)
+    {
+        cout<< "Error opening file "<<filename<<endl;
+        exit(-1);
+    }
     while(file.eof() != true)
     {
         file>>numi;
