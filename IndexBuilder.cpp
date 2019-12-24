@@ -29,10 +29,10 @@ IndexBuilder::~IndexBuilder()
  * @return True if index has been built successfully
  */
 
-bool IndexBuilder::build_index(InvertIndex* idx, doc_list files)
+/* bool IndexBuilder::build_index(InvertIndex* idx, doc_list files)
 {
     idx->indexing_collection(files);
-}
+} */
 
 bool IndexBuilder::build_index_from_collection(InvertIndex* idx)
 {

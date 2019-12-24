@@ -7,9 +7,9 @@
  */
 BinarySaverData::BinarySaverData(string path)
 {
-    root_dir_path = path;
-    if(check_dir(root_dir_path.c_str()) == false)
-        if(create_dir(root_dir_path.c_str()) == false)
+    const_root_dir_path = path;
+    if(fs::exists(const_root_dir_path) == false)
+        if(create_directories(const_root_dir_path) == false)
         {
             cout<<"Can't create root directory for storing data"<<endl;
             exit(-1);
@@ -39,7 +39,7 @@ bool create_dir(const char *dir_path)
 
 
 /**
- * @brief Save inverted index as binaty to a file
+ * @brief Save inverted index as binary to a file
  * @param [in] inverted_list index to be saved
  * 
  * The writing has a next format:
@@ -47,9 +47,9 @@ bool create_dir(const char *dir_path)
  * amount of position -> p,p,p,... -> doc -> amount of position -> 
  * ... -> word -> ...
 */
-void BinarySaverData::save_index(inverted_list index, string dir_instance)
+void BinarySaverData::save_index(inverted_list index, string file_path)
 {
-    ofstream f1(root_dir_path + dir_instance + index_file, ios::binary);
+    ofstream f1(file_path, ios::binary);
     size_t temp_size, amount_of_doc = 0;
     //amount of words
     temp_size = index.size();
@@ -80,19 +80,28 @@ void BinarySaverData::save_index(inverted_list index, string dir_instance)
  */
 void BinarySaverData::save(InvertIndex *instance, string dir_instance)
 {
-
-    if(check_dir((root_dir_path + dir_instance).c_str()) == false)
-        if(create_dir(root_dir_path.c_str()) == false)
+    fs::path root_dir_path = const_root_dir_path;
+    fs::path saving_path = root_dir_path.append(dir_instance);
+    if(fs::exists(saving_path) == false)
+        if(create_directories(saving_path) == false)
         {
-            cout<<"Can't create directory for binary saving data"<<endl;
+            cout<<"Can't create root directory for saving data"<<endl;
             exit(-1);
         }
-    write_simple_map(instance->GetD2L(), root_dir_path + dir_instance + doc2len_file);
-    write_simple_map(instance->GetN2D(), root_dir_path + dir_instance + num2doc_file);
-    write_simple_map(instance->GetD2N(), root_dir_path + dir_instance + doc2num_file);
-    save_index(instance->GetIndex(), root_dir_path + dir_instance + index_file);
 
-    ofstream f(root_dir_path + dir_instance + other_file, ios::out);
+    write_simple_map(instance->GetD2L(), saving_path.append(doc2len_file));
+    saving_path = saving_path.parent_path();
+
+    write_simple_map(instance->GetN2D(), saving_path.append(num2doc_file));
+    saving_path = saving_path.parent_path();
+
+    write_simple_map(instance->GetD2N(), saving_path.append(doc2num_file));
+    saving_path = saving_path.parent_path();
+    cout<<saving_path<<endl;
+    save_index(instance->GetIndex(), saving_path.append(index_file));
+    saving_path = saving_path.parent_path();
+
+    ofstream f(saving_path.append(other_file), ios::out);
     f<<instance->GetAverLen()<<endl;
     f<<instance->GetDocCount()<<endl;
     f.close();
@@ -103,9 +112,9 @@ void BinarySaverData::save(InvertIndex *instance, string dir_instance)
  * @brief Load inverted index
  * @return loaded inverted index
  */
-inverted_list BinarySaverData::load_index(string dir_instance)
+inverted_list BinarySaverData::load_index(string file_path)
 {
-    ifstream f1(root_dir_path + dir_instance + index_file, ios::binary);
+    ifstream f1(file_path, ios::binary);
     inverted_list test;
     string word, tmp;
     int doc_id, pos_id;
@@ -139,18 +148,28 @@ inverted_list BinarySaverData::load_index(string dir_instance)
  */
 void BinarySaverData::load(InvertIndex *instance, string dir_instance)
 {
-    if(check_dir( (root_dir_path + dir_instance).c_str() ) == false)
+    fs::path root_dir_path = const_root_dir_path;
+
+    fs::path loading_path = root_dir_path.append(dir_instance);
+    if(fs::exists(loading_path) == false)
     {
-        cout<<"Can't find the dir with the data"<<endl;
+        cout<<"Can't find the dir with the data "<<loading_path<<endl;
         exit(-1);
     }
-    inverted_list tmp = load_index(root_dir_path + dir_instance);
+    inverted_list tmp = load_index(loading_path.append(index_file));
     instance->SetIndex(tmp);
-    instance->SetN2D(read_is_map(root_dir_path + dir_instance + num2doc_file));
-    instance->SetD2N(read_si_map(root_dir_path + dir_instance + doc2num_file));
-    instance->SetD2L(read_if_map(root_dir_path + dir_instance + doc2len_file));
+    loading_path = loading_path.parent_path();
 
-    ifstream f(root_dir_path + dir_instance + other_file);
+    instance->SetN2D(read_is_map(loading_path.append(num2doc_file)));
+    loading_path = loading_path.parent_path();
+
+    instance->SetD2N(read_si_map(loading_path.append(doc2num_file)));
+    loading_path = loading_path.parent_path();
+
+    instance->SetD2L(read_if_map(loading_path.append(doc2len_file)));
+    loading_path = loading_path.parent_path();
+
+    ifstream f(loading_path.append(other_file));
     string tmpf, tmpl;
     f>>tmpf;
     f>>tmpl;

@@ -1,6 +1,6 @@
 # DONT FORGET updating a list of needed files after ":" and list of object files in arguments
 CC=g++
-CFLAGS=-c -Wall -std=c++17 -g -lstdc++fs
+CFLAGS=-c -Wall -std=c++17 -g 
 
 #INCLUDES=-I./includes/
 
@@ -11,13 +11,13 @@ PYTHONL = -Xlinker -export-dynamic
 all: test
 
 test: main.o SaverData.o InvertIndex.o utils.o IndexBuilder.o
-	$(CC) $(INCLUDES) main.o InvertIndex.o SaverData.o IndexBuilder.o utils.o -std=c++17 -o test -g 
+	$(CC) $(INCLUDES) main.o InvertIndex.o SaverData.o IndexBuilder.o utils.o -std=c++17 -o test -g -lstdc++fs
     
 main.o: main.cpp
 	$(CC) $(CFLAGS) -c -std=c++17 main.cpp 
     
 SaverData.o: SaverData.cpp
-	$(CC) $(CFLAGS) SaverData.cpp	
+	$(CC) $(CFLAGS) SaverData.cpp	-lstdc++fs
 
 InvertIndex.o: InvertIndex.cpp
 	$(CC) $(CFLAGS) -c -std=c++17 InvertIndex.cpp

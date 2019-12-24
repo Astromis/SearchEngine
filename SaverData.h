@@ -9,9 +9,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <bits/stdc++.h> 
+#include <experimental/filesystem>
 
 using namespace std;
-
+namespace fs = std::experimental::filesystem;
 
 bool check_dir(const char *dir_path);
 bool create_dir(const char *dir_path);
@@ -25,7 +26,7 @@ class SaverData
     virtual void save(InvertIndex *instance, string file_prefix)=0;
     virtual void load(InvertIndex *instance, string file_prefix)=0;
     //virtual ~SaverData();
-    string root_dir_path;
+    fs::path const_root_dir_path;
     protected:
 
 };
