@@ -6,21 +6,107 @@
 
 #include <map>
 #include <ctime>
+#include <algorithm>
 
+
+word_position_map position_map_merge(word_position_map m1, word_position_map m2)
+{
+    for(auto i:m1)
+        m2[i.first] = i.second;
+    return m2;
+}
 
 int main(int argc, char **argv)
 {
 
-    if(argc != 2)
+    /* if(argc != 2)
     {
         cout<<"Input parameters is not enough."<<endl;
         return 0;
+    } */
+
+
+    InvertIndex inv1, inv2;
+    string root = "store/";
+    string inst1 = "instance1/";
+    string inst2 = "instance2/";
+    IndexBuilder builder_t("", "", 1);
+    BinarySaverData saver(root);
+
+    //first chunk
+    builder_t.set_start_path("test_fol/");
+    //clock_t begin = clock();
+    builder_t.build_index_from_collection(&inv1);
+    //clock_t end = clock();
+
+    cout<<"Saving first chunk..."<<endl;
+    inv1.save(saver, inst1);
+    //second chunk
+    builder_t.set_start_path("test_fol1/");
+    //clock_t begin = clock();
+    builder_t.build_index_from_collection(&inv2);
+    //clock_t end = clock();
+    cout<<"Saving second chunk..."<<endl;
+    inv2.save(saver, inst2);
+    
+    IndexBuffer b1("store/instance1/index.bin");
+    IndexBuffer b2("store/instance2/index.bin");
+    vector<IndexBuffer> indicies = {b1, b2};
+    inverted_list result;
+    while(indicies.size() > 0)
+    {
+        
     }
-    InvertIndex inv;
-    IndexBuilder builder_t(string(argv[1]), "", 1);
-    clock_t begin = clock();
-    builder_t.build_index_from_collection(&inv);
-    clock_t end = clock();
+    /* 
+    vector< inverted_list::iterator> indices = {inv1.GetIndex().begin(), inv2.GetIndex().begin()};
+    inverted_list result;
+    vector<string> top_words;
+    word_position_map temp;
+    
+    while(indices[0] != inv1.GetIndex().end() && indices[1] != inv2.GetIndex().end())
+    {
+        top_words.clear();
+        for(int i = 0; i < indices.size(); i++)
+        {
+            top_words.push_back(indices[i]->first);
+        }
+        
+        temp.clear();
+        for(int i = 0; i < top_words.size(); i++)
+        {
+            temp = indices[i]->second;
+            for(int j = 1; j < top_words.size(); j++)
+            {
+                if(top_words[i] != top_words[j])
+                {
+                    continue;
+                }
+                else
+                {
+                    temp = position_map_merge(temp, indices[j]->second);
+                }
+            }
+            result[top_words[i]] = temp;
+        }
+        indices[0]++;
+        indices[1]++;
+    } */
+
+    for(auto i: result)
+        cout<<i.first<<endl;
+
+/*     for(auto i: inv1.GetIndex())
+        cout<<i.first<<endl;
+
+    for(auto i: inv2.GetIndex())
+        cout<<i.first<<endl; */
+
+    /* vector<string> res;
+   
+    for(auto& i:  inv.find(vector<string> {"int", "#include" }))
+        cout<<i.first<<" "<<i.second<<endl;  */
+
+/*
     cout<<"Ellapsed time: "<<double(end - begin) / CLOCKS_PER_SEC<<endl;
     for(auto& i:  inv.find(vector<string> {"int", "#include"  }))
         cout<<i.first<<" "<<i.second<<endl;
@@ -30,13 +116,10 @@ int main(int argc, char **argv)
     //for(auto& i:  inv.find(vector<string> {"int", "#include" }))
     //    cout<<i.first<<" "<<i.second<<endl; 
 
-    /* vector<string> res;
-   
-    for(auto& i:  inv.find(vector<string> {"int", "#include" }))
-        cout<<i.first<<" "<<i.second<<endl;  */
+//here
     
     string root = "store/";
-    string inst = "instance/";
+    string inst = "instance1/";
     BinarySaverData saver(root);
     cout<<"Saving..."<<endl;
     inv.save(saver, inst);
@@ -46,6 +129,6 @@ int main(int argc, char **argv)
     loaded_in.load(saver, inst);
     for(auto& i:  inv.find(vector<string> {"int", "#include" }))
         cout<<i.first<<" "<<i.second<<endl;
-
+*/
     return 0;
 }
