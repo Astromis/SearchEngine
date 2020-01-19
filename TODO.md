@@ -12,3 +12,7 @@
 
 Notes:
 Function for saving a general inverted list was created. Need to make an order into structure and make complite the rest of daving process.
+
+BUGS:
+segmentationf fault when trying to index empty dir
+bad error handlers in index builder

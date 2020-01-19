@@ -30,12 +30,12 @@ template<class mapType>
 void write_simple_map(mapType map, string filename)
 {
     ofstream file;
+    file.open (filename, ios::out);
     if(file.is_open() == false)
     {
         cout<< "Error opening file "<<filename<<endl;
         exit(-1);
     }
-    file.open (filename, ios::out);
     for(auto i: map)
         file<<i.first<<" "<<i.second<<endl;
     file.close();
