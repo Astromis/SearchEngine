@@ -44,6 +44,7 @@ class IndexBuilder
     public:
     IndexBuilder();
     IndexBuilder(string start_path, string ext = "", int thread_num=1);
+    void set_start_path(string start_path);
     ~IndexBuilder();
     
     bool build_index_from_collection(InvertIndex* idx);

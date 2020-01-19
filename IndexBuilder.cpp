@@ -11,7 +11,8 @@ IndexBuilder::IndexBuilder(string start_path, string ext, int thread_num)
     thread_count = thread_num;
     start_path = start_path;
     ext = ext;
-    get_dirs(ext, start_path, collection);
+    if(start_path != "")
+        get_dirs(ext, start_path, collection);
     threads.resize(thread_num);
 }
 
@@ -21,7 +22,12 @@ IndexBuilder::~IndexBuilder()
 
 }
 
+void IndexBuilder::set_start_path(string start_path)
+{
+    start_path = start_path;
+    get_dirs(ext, start_path, collection);
 
+}
 /**
  * @brief Create an inverted index for a given instane of InvertedIndex class
  * Starting with entry point, go through the all directores 
