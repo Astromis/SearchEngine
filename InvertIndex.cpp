@@ -5,6 +5,7 @@
 #include <set>
 
 mutex mut;
+int InvertIndex::doc_id = 0;
 
 //TODO: 
 // make tokenization (boost?)
@@ -16,7 +17,7 @@ mutex mut;
 
 InvertIndex::InvertIndex()
 {
-    doc_id = 0;
+   // doc_id = 0;
 }
 
 InvertIndex::InvertIndex(string path, string ext)

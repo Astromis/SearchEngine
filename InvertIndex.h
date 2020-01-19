@@ -99,7 +99,7 @@ class InvertIndex
         //string pathfolder;
         // file extentions that needs to consider
         //string extention;
-        int doc_id;
+        static int doc_id;
         // tables that defines relations between documents and its indeces
         map<int, string > num2doc;
         map<string, int> doc2num;
@@ -110,7 +110,6 @@ class InvertIndex
         // average document length (need for BM25)
         float average_doc_length;
 };
-
 
 
 #endif // INVERTINDEX_H
