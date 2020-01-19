@@ -120,18 +120,18 @@ inverted_list BinarySaverData::load_index(string file_path)
     int doc_id, pos_id;
     size_t word_count, vec_counter, doc_counter;
     f1.read((char*)&word_count, sizeof(size_t));
-    for(int i=0;  i < word_count;i++)
+    for(unsigned int i=0;  i < word_count;i++)
     {
         //read the word
         word = read_string(f1);
         //read the document counter
         f1.read((char*)&doc_counter, sizeof(size_t));
-        for(int j=0; j < doc_counter; j++)
+        for(unsigned int j=0; j < doc_counter; j++)
         {
             f1.read((char*)&doc_id, sizeof(int));
             //read position vector size
             f1.read((char*)&vec_counter, sizeof(size_t));
-            for(int k=0; k<vec_counter;k++)
+            for(unsigned int k=0; k<vec_counter;k++)
             {
                 f1.read((char*)&pos_id, sizeof(int));
                 test[word][doc_id].push_back(pos_id);
@@ -177,4 +177,91 @@ void BinarySaverData::load(InvertIndex *instance, string dir_instance)
     instance->SetDocCount(stol(tmpl));
     f.close();
 
+}
+
+IndexBuffer::IndexBuffer()
+{
+    file_handler.open("", ios::binary);
+    
+}
+IndexBuffer::IndexBuffer(const IndexBuffer &obj)
+{
+    index = obj.index;
+    index_it = obj.index_it; 
+    index_it_end = obj.index_it_end;
+    index_file = obj.index_file;
+    file_handler.open(obj.file_name, ios::binary);
+    word = obj.word;
+    word_count =  obj.word_count;
+    load_counter = obj.load_counter;
+}
+
+IndexBuffer::IndexBuffer(string file_path)
+{
+    file_handler.open(file_path, ios::binary);
+    if(file_handler.is_open() != true)
+    {
+        cout<<"Couldn't open file"<<endl;
+        exit(1);
+    }
+    // need for copy constructor
+    file_name = file_path;
+    file_handler.read((char*)&word_count, sizeof(size_t));
+}
+
+string IndexBuffer::get_top_word()
+{
+    return index_it->first;
+}
+
+word_position_map IndexBuffer::get_top_position_map()
+{
+    return index_it->second;
+}
+
+int IndexBuffer::next()
+{
+    if(index_it != index_it_end)
+    {
+        index_it++;
+        return 0;
+    }
+    else
+    {
+        index.clear();
+        if(load_counter < word_count)
+        {
+            load_portion( word_count-load_counter > 10 ? 10 : word_count-load_counter);
+            return 0;
+        }
+        else return 1;
+    }
+
+}
+
+void IndexBuffer::load_portion(int amount)
+{
+    int doc_id, pos_id;
+    size_t vec_counter, doc_counter;
+    for(int i=0;  i < amount;i++)
+    {
+        //read the word
+        word = read_string(file_handler);
+        //read the document counter
+        file_handler.read((char*)&doc_counter, sizeof(size_t));
+        for(unsigned int j=0; j < doc_counter; j++)
+        {
+            file_handler.read((char*)&doc_id, sizeof(int));
+            //read position vector size
+            file_handler.read((char*)&vec_counter, sizeof(size_t));
+            for(unsigned int k=0; k<vec_counter;k++)
+            {
+                file_handler.read((char*)&pos_id, sizeof(int));
+                index[word][doc_id].push_back(pos_id);
+            }
+        }
+    }
+    load_counter += amount;
+    index_it = index.begin();
+    index_it_end = index.end();
 }
