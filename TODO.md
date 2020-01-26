@@ -16,3 +16,4 @@ Function for saving a general inverted list was created. Need to make an order i
 BUGS:
 segmentationf fault when trying to index empty dir
 bad error handlers in index builder
+the method clear() on map doesn't free memory

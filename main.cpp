@@ -27,7 +27,17 @@ int main(int argc, char **argv)
     } */
 
 
-    InvertIndex inv1, inv2;
+    InvertIndex inv1;
+    IndexBuilder builder_t("", "", 1);
+
+    //first chunk
+    builder_t.set_start_path("test_fol2/");
+    //clock_t begin = clock();
+    builder_t.build_index_from_collection(&inv1);
+    //clock_t end = clock();
+
+
+/*     InvertIndex inv1, inv2;
     string root = "store/";
     string inst1 = "instance1/";
     string inst2 = "instance2/";
@@ -97,7 +107,7 @@ int main(int argc, char **argv)
     for(auto i:indicies[0].GetInvertedIndex())
     {
         result[i.first] = i.second;
-    }
+    } */
     /* 
     vector< inverted_list::iterator> indices = {inv1.GetIndex().begin(), inv2.GetIndex().begin()};
     inverted_list result;
@@ -133,7 +143,7 @@ int main(int argc, char **argv)
         indices[1]++;
     } */
 
-    for(auto i: result)
+    for(auto i: inv1.GetIndex())
         cout<<i.first<<endl;
 
 /*     for(auto i: inv1.GetIndex())

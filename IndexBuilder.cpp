@@ -176,4 +176,54 @@ void IndexBuilder::BSBITest()
     
     }
 } 
+/*
+The core of large-scale indexing algorithm
 
+    IndexBuffer b1("store/instance1/index.bin");
+    IndexBuffer b2("store/instance2/index.bin");
+    vector<IndexBuffer> indicies = {b1, b2};
+    inverted_list result;
+    string min;
+    word_position_map temp;
+    while(indicies.size() > 1)
+    {
+        //find upper alphabetic word
+        min = indicies[0].get_top_word();
+        for(int i=1; i < indicies.size(); i++)
+        {
+            if(min.compare(indicies[i].get_top_word()) > 0) 
+            {
+                min = indicies[i].get_top_word();
+            }
+        }
+        temp.clear();
+        //merge and push to the result
+        for(int i=0; i < indicies.size(); i++)
+        {
+            if(indicies[i].get_top_word().compare(min) == 0)
+            {
+                if(temp.size() == 0)
+                {
+                    temp = indicies[i].get_top_position_map();
+                    if(indicies[i].next())
+                    {
+                        indicies.erase(indicies.begin() + i);
+                    }
+                }
+                else
+                {
+                    temp = position_map_merge(temp, indicies[i].get_top_position_map());
+                    if(indicies[i].next())
+                    {
+                        indicies.erase(indicies.begin() + i);
+                    }
+                }
+            }
+        }
+        result[min] = temp;
+    }
+    //merge remain map
+    for(auto i:indicies[0].GetInvertedIndex())
+    {
+        result[i.first] = i.second;
+    } */
