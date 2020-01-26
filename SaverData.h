@@ -61,27 +61,23 @@ class IndexBuffer
     public:
         inverted_list index;
         inverted_list::iterator index_it, index_it_end;
-        string index_file;
         ifstream file_handler;
-        string word, file_name;
+        string word, index_file;
         size_t word_count, load_counter;
-        bool allow; // not used
         void load_portion(int amount);
-
+        int load_amount;
 
         streampos position;
 
     public:
         IndexBuffer(const IndexBuffer &);
         IndexBuffer();
-        IndexBuffer(string file_path);
+        IndexBuffer(string file_path, int amount=5);
         string get_top_word();
         word_position_map get_top_position_map();
         int next();
         inverted_list GetInvertedIndex();
         IndexBuffer& operator=(const IndexBuffer& obj);
-
-        bool check_allow(); // not used
 
 };
 
