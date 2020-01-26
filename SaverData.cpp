@@ -181,7 +181,7 @@ void BinarySaverData::load(InvertIndex *instance, string dir_instance)
 
 IndexBuffer::IndexBuffer()
 {
-    file_handler.open("", ios::binary);
+    //file_handler.open("", ios::binary);
     
 }
 IndexBuffer::IndexBuffer(const IndexBuffer &obj)
@@ -190,51 +190,71 @@ IndexBuffer::IndexBuffer(const IndexBuffer &obj)
     index_it = obj.index_it; 
     index_it_end = obj.index_it_end;
     index_file = obj.index_file;
-    file_handler.open(obj.file_name, ios::binary);
+    file_name = obj.file_name;
+    //file_handler.open(obj.file_name, ios::binary);
     word = obj.word;
     word_count =  obj.word_count;
     load_counter = obj.load_counter;
+    position = obj.position;
+}
+
+IndexBuffer& IndexBuffer::operator=(const IndexBuffer& obj)
+{
+    index = obj.index;
+    index_it = obj.index_it; 
+    index_it_end = obj.index_it_end;
+    index_file = obj.index_file;
+    file_name = obj.file_name;
+    //file_handler.open(obj.file_name, ios::binary);
+    word = obj.word;
+    word_count =  obj.word_count;
+    load_counter = obj.load_counter;
+    position = obj.position;
+    return *this;
 }
 
 IndexBuffer::IndexBuffer(string file_path)
 {
+    
     file_handler.open(file_path, ios::binary);
+    load_counter = 0;
     if(file_handler.is_open() != true)
     {
-        cout<<"Couldn't open file"<<endl;
+        cout<<"Couldn't open file in constructor"<<endl;
         exit(1);
     }
     // need for copy constructor
     file_name = file_path;
     file_handler.read((char*)&word_count, sizeof(size_t));
+    load_portion(5);
 }
 
 string IndexBuffer::get_top_word()
 {
-    return index_it->first;
+    return this->index_it->first;
 }
 
 word_position_map IndexBuffer::get_top_position_map()
 {
-    return index_it->second;
+    return this->index_it->second;
 }
 
 int IndexBuffer::next()
 {
-    if(index_it != index_it_end)
+    index_it++;
+    if(this->index_it == this->index_it_end)
     {
-        index_it++;
-        return 0;
+        this->index.clear();
+        if(load_counter < word_count)
+        {
+            load_portion( word_count-load_counter > 5 ? 5 : word_count-load_counter);
+            return 0;
+        }
+        else return 1;        
     }
     else
     {
-        index.clear();
-        if(load_counter < word_count)
-        {
-            load_portion( word_count-load_counter > 10 ? 10 : word_count-load_counter);
-            return 0;
-        }
-        else return 1;
+        return 0;
     }
 
 }
@@ -243,11 +263,29 @@ void IndexBuffer::load_portion(int amount)
 {
     int doc_id, pos_id;
     size_t vec_counter, doc_counter;
+
+    if(file_handler.is_open() == 0)
+    {
+        file_handler.open(file_name, ios::binary);
+        if(file_handler.is_open() == 0)
+        {
+            cout<<"Couldn't open file in load function"<<endl;
+            exit(1);
+        }
+        if(position != 0) file_handler.seekg(position);
+    }
+    cout<<file_name<<endl;
+    cout<<"File opened in load function"<<endl;
     for(int i=0;  i < amount;i++)
     {
         //read the word
         word = read_string(file_handler);
         //read the document counter
+        if(file_handler.is_open() == 0)
+        {
+            cout<<"the file is closed"<<endl;
+            exit(1);
+        } 
         file_handler.read((char*)&doc_counter, sizeof(size_t));
         for(unsigned int j=0; j < doc_counter; j++)
         {
@@ -261,7 +299,12 @@ void IndexBuffer::load_portion(int amount)
             }
         }
     }
+    position = file_handler.tellg();
     load_counter += amount;
-    index_it = index.begin();
-    index_it_end = index.end();
+    this->index_it = index.begin();
+    this->index_it_end = index.end();
+}
+inverted_list IndexBuffer::GetInvertedIndex()
+{
+    return this->index;
 }

@@ -68,6 +68,9 @@ class IndexBuffer
         bool allow; // not used
         void load_portion(int amount);
 
+
+        streampos position;
+
     public:
         IndexBuffer(const IndexBuffer &);
         IndexBuffer();
@@ -75,6 +78,9 @@ class IndexBuffer
         string get_top_word();
         word_position_map get_top_position_map();
         int next();
+        inverted_list GetInvertedIndex();
+        IndexBuffer& operator=(const IndexBuffer& obj);
+
         bool check_allow(); // not used
 
 };
