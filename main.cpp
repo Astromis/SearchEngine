@@ -16,6 +16,7 @@ word_position_map position_map_merge(word_position_map m1, word_position_map m2)
     return m2;
 }
 
+
 int main(int argc, char **argv)
 {
 
@@ -53,9 +54,49 @@ int main(int argc, char **argv)
     IndexBuffer b2("store/instance2/index.bin");
     vector<IndexBuffer> indicies = {b1, b2};
     inverted_list result;
-    while(indicies.size() > 0)
+    string min;
+    word_position_map temp;
+    while(indicies.size() > 1)
     {
-        
+        //find upper alphabetic word
+        min = indicies[0].get_top_word();
+        for(int i=1; i < indicies.size(); i++)
+        {
+            if(min.compare(indicies[i].get_top_word()) > 0) 
+            {
+                min = indicies[i].get_top_word();
+            }
+        }
+        temp.clear();
+        //merge and push to the result
+        for(int i=0; i < indicies.size(); i++)
+        {
+            if(indicies[i].get_top_word().compare(min) == 0)
+            {
+                if(temp.size() == 0)
+                {
+                    temp = indicies[i].get_top_position_map();
+                    if(indicies[i].next())
+                    {
+                        indicies.erase(indicies.begin() + i);
+                    }
+                }
+                else
+                {
+                    temp = position_map_merge(temp, indicies[i].get_top_position_map());
+                    if(indicies[i].next())
+                    {
+                        indicies.erase(indicies.begin() + i);
+                    }
+                }
+            }
+        }
+        result[min] = temp;
+    }
+    //merge remain map
+    for(auto i:indicies[0].GetInvertedIndex())
+    {
+        result[i.first] = i.second;
     }
     /* 
     vector< inverted_list::iterator> indices = {inv1.GetIndex().begin(), inv2.GetIndex().begin()};
