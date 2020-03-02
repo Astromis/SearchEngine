@@ -1,5 +1,5 @@
 #include "SaverData.h"
-
+#define DEBUG 1
 
 /**
  * @brief Contructor
@@ -97,7 +97,10 @@ void BinarySaverData::save(InvertIndex *instance, string dir_instance)
 
     write_simple_map(instance->GetD2N(), saving_path.append(doc2num_file));
     saving_path = saving_path.parent_path();
-    cout<<saving_path<<endl;
+    #ifdef DEBUG
+    cout<<"Saving path: "<<saving_path<<endl;
+    cout<<"Amount of words in index: "<<instance->GetIndex().size()<<endl;
+    #endif
     save_index(instance->GetIndex(), saving_path.append(index_file));
     saving_path = saving_path.parent_path();
 
@@ -198,27 +201,37 @@ IndexBuffer::IndexBuffer(const IndexBuffer &obj)
 
 IndexBuffer& IndexBuffer::operator=(const IndexBuffer& obj)
 {
+    //FIXME: add restriction of self assinment 
+    if(this != &obj)
+    {
+
+    }
     load_amount = obj.load_amount;
     index = obj.index;
-    index_it = obj.index_it; 
-    index_it_end = obj.index_it_end;
+    index_it = index.begin();//obj.index_it; 
+    index_it_end = index.end();//obj.index_it_end;
     index_file = obj.index_file;
     word = obj.word;
     word_count =  obj.word_count;
     load_counter = obj.load_counter;
     position = obj.position;
+
     return *this;
 }
 
-IndexBuffer::IndexBuffer(string file_path, int amount=5)
+IndexBuffer::IndexBuffer(string file_path, int amount)
 {
     load_amount = amount;
     load_counter = 0;
 
     file_handler.open(file_path, ios::binary);
+    #ifdef DEBUG
+    if(file_path == "") cout<<"File path is empty in IndexBuffer ctr"<<endl;
+    #endif
     if(file_handler.is_open() != true)
     {
         cout<<"Couldn't open file in constructor"<<endl;
+        cout<<file_path<<endl;
         exit(1);
     }
     // need for correct work with files(better to reopen file in new obj)
