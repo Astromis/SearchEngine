@@ -4,6 +4,9 @@
 #include <utility>
 #include <set>
 
+#define VERBOSE 1
+
+
 mutex mut;
 int InvertIndex::doc_id = 0;
 
@@ -52,8 +55,14 @@ bool InvertIndex::indexing_file(string file)
         num2doc[doc_id] = file.c_str();
         doc2num[file.c_str()] = doc_id;
         index[word][doc_id].push_back((int)(in.tellg()) - (word.length()));
+        
+        //cout << word <<"\r" << flush;
+        
         word_count++;
     }
+    
+    //std::cout << endl;
+    
     doc_length[doc_id] = word_count;
     average_doc_length += word_count;
     word_count = 0;
@@ -73,10 +82,24 @@ bool InvertIndex::indexing_file(string file)
 bool InvertIndex::indexing_collection(doc_list& files)
 {  
     
-    for (unsigned int i = 0;i < files.size();i++)
+    /* for (unsigned int i = 0;i < files.size();i++)
     {
         indexing_file(files[i]);
+    } */
+    int starting_point = get_free_memory();
+    while (files.size() > 0)
+    {
+        //FIXME: remove constant value of a memory treshold
+        if((starting_point - get_free_memory()) > 20000)
+        {
+            cout<<get_free_memory()<<endl;
+            cout<<"The free memory has exceeded the threshold"<<endl;
+            return false;
+        }
+        indexing_file(files[files.size() - 1]);
+        files.pop_back();   
     }
+    
 
     cout<<"Indexing complete in thread id "<<this_thread::get_id()<<". Size: "<< index.size()<<endl;   
     return true;
@@ -307,6 +330,9 @@ vector< pair<float, string> > InvertIndex::find(vector<string> quary)
 void InvertIndex::save(SaverData& saver, string dir_instance)
 {
     saver.save(this, dir_instance);
+    #ifdef VERBOSE
+    cout<<"Saving complited"<<endl;
+    #endif
 }
 
 /**
@@ -321,4 +347,5 @@ void InvertIndex::load(SaverData& saver, string dir_instance)
 void InvertIndex::clear_index()
 {
     index.clear();
+    //inverted_list().swap(index);
 }
