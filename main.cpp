@@ -9,12 +9,6 @@
 #include <algorithm>
 
 
-word_position_map position_map_merge(word_position_map m1, word_position_map m2)
-{
-    for(auto i:m1)
-        m2[i.first] = i.second;
-    return m2;
-}
 
 
 int main(int argc, char **argv)
@@ -27,24 +21,32 @@ int main(int argc, char **argv)
     } */
 
 
-    InvertIndex inv1;
+    //InvertIndex inv1;
     IndexBuilder builder_t("", "", 1);
-
+    builder_t.BSBITest();
     //first chunk
-    builder_t.set_start_path("test_fol2/");
+    //builder_t.set_start_path("test_fol2/");
     //clock_t begin = clock();
-    builder_t.build_index_from_collection(&inv1);
+    //builder_t.build_index_from_collection(&inv1);
     //clock_t end = clock();
+    /* vector<IndexBuffer> indicies(2);
+    for(int i=0; i < 2;  i++)
+    {
+        //cout<<temp_storages[ + "index.bin"<<endl;
+        string path = "store/store/instance" + to_string(i) + "/index.bin";
+        //IndexBuffer ib(path, 5);
+        indicies[i] = IndexBuffer(path);
+        
+    } */
 
-
-/*     InvertIndex inv1, inv2;
+    /* InvertIndex inv1, inv2;
     string root = "store/";
     string inst1 = "instance1/";
     string inst2 = "instance2/";
     IndexBuilder builder_t("", "", 1);
-    BinarySaverData saver(root);
+    BinarySaverData saver(root); */
 
-    //first chunk
+    /* //first chunk
     builder_t.set_start_path("test_fol/");
     //clock_t begin = clock();
     builder_t.build_index_from_collection(&inv1);
@@ -58,12 +60,13 @@ int main(int argc, char **argv)
     builder_t.build_index_from_collection(&inv2);
     //clock_t end = clock();
     cout<<"Saving second chunk..."<<endl;
-    inv2.save(saver, inst2);
-    
-    IndexBuffer b1("store/instance1/index.bin");
-    IndexBuffer b2("store/instance2/index.bin");
-    vector<IndexBuffer> indicies = {b1, b2};
-    inverted_list result;
+    inv2.save(saver, inst2); */
+   
+    /* IndexBuffer b2("store/store/instance1/index.bin", 100);
+    IndexBuffer b3("store/store/instance2/index.bin", 100);
+    IndexBuffer b1("store/store/instance0/index.bin", 100);
+    vector<IndexBuffer> indicies = {b1, b2, b3}; */
+    /* inverted_list result;
     string min;
     word_position_map temp;
     while(indicies.size() > 1)
@@ -107,44 +110,12 @@ int main(int argc, char **argv)
     for(auto i:indicies[0].GetInvertedIndex())
     {
         result[i.first] = i.second;
-    } */
-    /* 
-    vector< inverted_list::iterator> indices = {inv1.GetIndex().begin(), inv2.GetIndex().begin()};
-    inverted_list result;
-    vector<string> top_words;
-    word_position_map temp;
-    
-    while(indices[0] != inv1.GetIndex().end() && indices[1] != inv2.GetIndex().end())
-    {
-        top_words.clear();
-        for(int i = 0; i < indices.size(); i++)
-        {
-            top_words.push_back(indices[i]->first);
-        }
-        
-        temp.clear();
-        for(int i = 0; i < top_words.size(); i++)
-        {
-            temp = indices[i]->second;
-            for(int j = 1; j < top_words.size(); j++)
-            {
-                if(top_words[i] != top_words[j])
-                {
-                    continue;
-                }
-                else
-                {
-                    temp = position_map_merge(temp, indices[j]->second);
-                }
-            }
-            result[top_words[i]] = temp;
-        }
-        indices[0]++;
-        indices[1]++;
-    } */
+    } 
 
-    for(auto i: inv1.GetIndex())
-        cout<<i.first<<endl;
+    for(auto i: result)
+        cout<<i.first<<endl;  */
+    /* for(auto i: inv1.GetIndex())
+        cout<<i.first<<endl; */
 
 /*     for(auto i: inv1.GetIndex())
         cout<<i.first<<endl;

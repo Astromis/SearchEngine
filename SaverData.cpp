@@ -201,7 +201,7 @@ IndexBuffer::IndexBuffer(const IndexBuffer &obj)
 
 IndexBuffer& IndexBuffer::operator=(const IndexBuffer& obj)
 {
-    //FIXME: add restriction of self assinment 
+    //FIXME: add restriction of self assignment 
     if(this != &obj)
     {
 
