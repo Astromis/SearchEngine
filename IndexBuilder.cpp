@@ -157,24 +157,108 @@ doc_list IndexBuilder::form_the_doclist()
     return result;
 }
 
-void IndexBuilder::BSBITest()
+bool IndexBuilder::is_collection_empty()
 {
-    InvertIndex index;
-    doc_list result;
-    doc_list tmp = collection;
-    BinarySaverData saver("./temp/");
-    while(tmp.size() != 0)
+    return collection.size() > 0 ? false : true;
+}
+
+string generate_name(string base)
+{
+    static string aux = "instance";
+    static int count = -1;
+    count++;
+    return base + aux + to_string(count) + "/";
+}
+
+word_position_map position_map_merge(word_position_map m1, word_position_map m2)
+{
+    for(auto i:m1)
+        m2[i.first] = i.second;
+    return m2;
+}
+
+void IndexBuilder::BSBITest()
+
+{
+    vector<InvertIndex> inv(1);
+    //IndexBuilder builder_t("", "", 1);
+    set_start_path("test_fol4/");
+    string root = "store/";
+    BinarySaverData saver(root);
+    string temp_name;
+    vector<string> temp_storages;
+    int saving_counter = 0;
+    while (!is_collection_empty())
     {
-        // get some name for next directory
-        while( get_free_memory() > (500 * 1024) || tmp.size() == 0)
-        {
-            string file = tmp.back();
-            tmp.pop_back();
-            index.indexing_file(file);
+        if(!build_index_from_collection(&inv[inv.size()-1])){
+            temp_name = generate_name(root);
+            temp_storages.push_back(temp_name);
+            inv[inv.size()-1].save(saver, temp_name);
+            inv[inv.size()-1].clear_index();
+            inv.push_back(InvertIndex());
+            saving_counter++;
         }
-        //index.save()
-    
+        //else exit(1);
     }
+    temp_name = generate_name(root);
+    temp_storages.push_back(temp_name);
+    inv[inv.size()-1].save(saver, temp_name);
+    cout<<"Indexing complited"<<endl;
+    vector<IndexBuffer> indicies(saving_counter);
+    for(int i=0; i < saving_counter; i++)
+    {
+        cout<<temp_storages[i] + "index.bin"<<endl;
+        IndexBuffer a("store/" + temp_storages[i] + "index.bin");
+        indicies[i] = a;
+    }
+    inverted_list result;
+    string min;
+    word_position_map temp;
+    cout<<"Merging all indicies into one"<<endl;
+    while(indicies.size() > 1)
+    {
+        //find upper alphabetic word
+        min = indicies[0].get_top_word();
+        for(int i=1; i < indicies.size(); i++)
+        {
+            if(min.compare(indicies[i].get_top_word()) > 0) 
+            {
+                min = indicies[i].get_top_word();
+            }
+        }
+        temp.clear();
+        //merge and push to the result
+        for(int i=0; i < indicies.size(); i++)
+        {
+            if(indicies[i].get_top_word().compare(min) == 0)
+            {
+                if(temp.size() == 0)
+                {
+                    temp = indicies[i].get_top_position_map();
+                    if(indicies[i].next())
+                    {
+                        indicies.erase(indicies.begin() + i);
+                    }
+                }
+                else
+                {
+                    temp = position_map_merge(temp, indicies[i].get_top_position_map());
+                    if(indicies[i].next())
+                    {
+                        indicies.erase(indicies.begin() + i);
+                    }
+                }
+            }
+        }
+        result[min] = temp;
+    }
+    //merge remain map
+    for(auto i:indicies[0].GetInvertedIndex())
+    {
+        result[i.first] = i.second;
+    }
+    cout<<"Merging complited"<<endl;
+    exit(1);
 } 
 /*
 The core of large-scale indexing algorithm

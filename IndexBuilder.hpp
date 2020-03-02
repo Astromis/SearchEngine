@@ -50,7 +50,9 @@ class IndexBuilder
     bool build_index_from_collection(InvertIndex* idx);
     void BSBITest();
     void threadIndexing(doc_list &files, inverted_list &index);
-    
+    bool is_collection_empty();
     
 
 };
+
+word_position_map position_map_merge(word_position_map m1, word_position_map m2);
