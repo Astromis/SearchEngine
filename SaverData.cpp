@@ -182,6 +182,8 @@ void BinarySaverData::load(InvertIndex *instance, string dir_instance)
 
 }
 
+
+
 IndexBuffer::IndexBuffer()
 {    
 }
@@ -320,4 +322,97 @@ void IndexBuffer::load_portion(int amount)
 inverted_list IndexBuffer::GetInvertedIndex()
 {
     return this->index;
+}
+
+
+IndexBufferO::IndexBufferO(string file_path, int capacity)
+{
+    capacity = capacity;
+    save_counter = 0;
+
+    file_handler.open(file_path, ios::binary);
+    #ifdef DEBUG
+    if(file_path == "") cout<<"File path is empty in IndexBuffer ctr"<<endl;
+    #endif
+    if(file_handler.is_open() != true)
+    {
+        cout<<"Couldn't open file in constructor"<<endl;
+        cout<<file_path<<endl;
+        exit(1);
+    }
+    // need for correct work with files(better to reopen file in new obj)
+    index_file = file_path;
+    //file_handler.read((char*)&word_count, sizeof(size_t));
+    //initial saving of index
+    //reserve place for amount of documents
+    file_handler.write((char*)(255 * sizeof(size_t)), sizeof(size_t));
+    //save_portion(save_amount);
+}
+
+void IndexBufferO::save_portion()
+{
+    //Due to some features of streams with copying objects
+    //It's better here to check/open/check the index file
+    if(file_handler.is_open() == 0)
+    {
+        file_handler.open(index_file, ios::binary);
+        if(file_handler.is_open() == 0)
+        {
+            cout<<"Couldn't open file in save function"<<endl;
+            exit(1);
+        }
+        if(position != 0) file_handler.seekp(position);
+    }
+
+    size_t temp_size, amount_of_doc = 0;
+    for(auto& i: index)
+    {
+        write_string(file_handler, i.first);
+        //amount of documents
+        amount_of_doc = i.second.size();
+        file_handler.write((char*)&amount_of_doc, sizeof(size_t));
+        for(auto& j: i.second)
+        {
+            file_handler.write((char*)&j.first,sizeof(int));
+            //amount of possition
+            temp_size = j.second.size();
+            file_handler.write((char*)&temp_size,sizeof(size_t));
+            for(auto& k: j.second)
+            {
+                file_handler.write((char*)&k,sizeof(int));
+            }
+        }
+    }
+    //For futher reopenings
+    position = file_handler.tellp();
+    save_counter += index.size();
+    index.clear();
+    index.erase(index.begin(), index.end());
+
+}
+
+IndexBufferO::~IndexBufferO()
+{
+    if(file_handler.is_open() == 0)
+    {
+        file_handler.open(index_file, ios::binary);
+        if(file_handler.is_open() == 0)
+        {
+            cout<<"Couldn't open file in dtor"<<endl;
+            exit(1);
+        }
+    }
+    save_portion();
+    file_handler.seekp(0);
+    file_handler.write((char*)save_counter, sizeof(size_t));
+    
+}
+
+word_position_map& IndexBufferO::operator[](string q)
+{
+    if(index.size() > capacity)
+    {
+        save_portion();
+    }
+    return index[q];
 }
