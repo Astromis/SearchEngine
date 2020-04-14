@@ -90,7 +90,7 @@ bool InvertIndex::indexing_collection(doc_list& files)
     while (files.size() > 0)
     {
         //FIXME: remove constant value of a memory treshold
-        if((starting_point - get_free_memory()) > 20000)
+        if((starting_point - get_free_memory()) > 200000)
         {
             cout<<get_free_memory()<<endl;
             cout<<"The free memory has exceeded the threshold"<<endl;

@@ -72,7 +72,7 @@ class IndexBuffer
     public:
         IndexBuffer(const IndexBuffer &);
         IndexBuffer();
-        IndexBuffer(string file_path, int amount=5);
+        IndexBuffer(string file_path, int amount=100);
         string get_top_word();
         word_position_map get_top_position_map();
         int next();
@@ -97,7 +97,7 @@ class IndexBufferO
     IndexBufferO();
     ~IndexBufferO();
     IndexBufferO(const IndexBufferO &);
-    IndexBufferO(string file_path, int amount=5);
+    IndexBufferO(string file_path, int amount=100);
     void save_portion();
     int next();
     IndexBuffer& operator=(const IndexBuffer& obj);
