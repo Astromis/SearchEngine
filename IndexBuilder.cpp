@@ -182,12 +182,12 @@ void IndexBuilder::BSBITest()
 {
     vector<InvertIndex> inv(1);
     //IndexBuilder builder_t("", "", 1);
-    set_start_path("test_fol4/");
+    set_start_path("test_fol/");
     string root = "store/";
     BinarySaverData saver(root);
     string temp_name;
     vector<string> temp_storages;
-    int saving_counter = 0;
+    int saving_counter = 1;
     while (!is_collection_empty())
     {
         if(!build_index_from_collection(&inv[inv.size()-1])){
@@ -211,7 +211,8 @@ void IndexBuilder::BSBITest()
         IndexBuffer a("store/" + temp_storages[i] + "index.bin");
         indicies[i] = a;
     }
-    inverted_list result;
+    //inverted_list result;
+    IndexBufferO result("result.bin");
     string min;
     word_position_map temp;
     cout<<"Merging all indicies into one"<<endl;
@@ -258,7 +259,7 @@ void IndexBuilder::BSBITest()
         result[i.first] = i.second;
     }
     cout<<"Merging complited"<<endl;
-    exit(1);
+    //exit(1);
 } 
 /*
 The core of large-scale indexing algorithm

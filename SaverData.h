@@ -88,13 +88,14 @@ class IndexBufferO
     inverted_list index;
     ofstream file_handler;
     string word, index_file;
-    size_t word_count, save_counter, capacity;
+    size_t word_count, save_counter, _capacity;
     int save_amount;
     streampos position;
     int total_words;
     inverted_list::iterator index_it, index_it_end;
 
     IndexBufferO();
+    ~IndexBufferO();
     IndexBufferO(const IndexBufferO &);
     IndexBufferO(string file_path, int amount=5);
     void save_portion();

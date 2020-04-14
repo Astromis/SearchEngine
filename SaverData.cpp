@@ -327,7 +327,7 @@ inverted_list IndexBuffer::GetInvertedIndex()
 
 IndexBufferO::IndexBufferO(string file_path, int capacity)
 {
-    capacity = capacity;
+    _capacity = capacity;
     save_counter = 0;
 
     file_handler.open(file_path, ios::binary);
@@ -345,7 +345,8 @@ IndexBufferO::IndexBufferO(string file_path, int capacity)
     //file_handler.read((char*)&word_count, sizeof(size_t));
     //initial saving of index
     //reserve place for amount of documents
-    file_handler.write((char*)(255 * sizeof(size_t)), sizeof(size_t));
+    size_t ll = 1;
+    file_handler.write((char*)&ll, sizeof(size_t));
     //save_portion(save_amount);
 }
 
@@ -403,14 +404,16 @@ IndexBufferO::~IndexBufferO()
         }
     }
     save_portion();
-    file_handler.seekp(0);
-    file_handler.write((char*)save_counter, sizeof(size_t));
+    file_handler.seekp(0, ios::beg);
+    file_handler.put(save_counter);
+    //file_handler.write((char*)save_counter, sizeof(size_t));
+    file_handler.close();
     
 }
 
 word_position_map& IndexBufferO::operator[](string q)
 {
-    if(index.size() > capacity)
+    if(index.size() > _capacity)
     {
         save_portion();
     }
