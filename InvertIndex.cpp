@@ -21,6 +21,8 @@ int InvertIndex::doc_id = 0;
 InvertIndex::InvertIndex()
 {
    // doc_id = 0;
+    document_count = 0;
+    average_doc_length = 1;
 }
 
 InvertIndex::InvertIndex(string path, string ext)
@@ -29,6 +31,9 @@ InvertIndex::InvertIndex(string path, string ext)
     extention = ext; */
     doc_id = 0;
     //ctor
+    document_count = 0;
+    average_doc_length = 1;
+
 }
 
 InvertIndex::~InvertIndex()

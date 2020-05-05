@@ -18,3 +18,5 @@ segmentationf fault when trying to index empty dir
 bad error handlers in index builder
 the method clear() on map doesn't free memory
 In blocking indexing, when merging the rest of the index, the merging is incomplite because it doesn't load all data.
+If in a filename sapces are presented, the loading function will not work correctly.
+If there is no combination of words in index, it will be crashed InvertedIndex.cpp:143
