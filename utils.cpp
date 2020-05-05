@@ -42,6 +42,11 @@ map<int, string > read_is_map(string filename)
     map<int, string > tmp;
     string num, str;
     file.open(filename, ios::out);
+    if(file.is_open() == false)
+    {
+        cout<< "Error opening file "<<filename<<endl;
+        exit(-1);
+    }
     while(file.eof() != true)
     {
         file>>num;
@@ -57,6 +62,11 @@ map<string, int > read_si_map(string filename)
     map<string, int > tmp;
     string num, str;
     file.open(filename, ios::out);
+    if(file.is_open() == false)
+    {
+        cout<< "Error opening file "<<filename<<endl;
+        exit(-1);
+    }
     while(file.eof() != true)
     {
         file>>str;
@@ -72,6 +82,11 @@ map<int, float > read_if_map(string filename)
     map<int, float > tmp;
     string numi, numf;
     file.open(filename, ios::out);
+    if(file.is_open() == false)
+    {
+        cout<< "Error opening file "<<filename<<endl;
+        exit(-1);
+    }
     while(file.eof() != true)
     {
         file>>numi;
@@ -79,4 +94,25 @@ map<int, float > read_if_map(string filename)
         tmp[stoi(numi)] = stof(numf);
     }
     return tmp;
+}
+
+/**
+ * @brief get the free memory available in the Linux
+ * @return free memory in kB, -1 if somthing went wrong
+ */
+int get_free_memory()
+{
+    FILE * pFile;
+    int amount;
+    char str[50];
+    pFile = fopen ("/proc/meminfo","r");
+    while (fscanf(pFile, "%s\t%d kB\n" , str, &amount) != EOF)
+    {
+        if(string(str) == "MemFree:"){
+            fclose(pFile);
+            return amount;
+        }
+    }
+    fclose(pFile);
+    return -1;
 }

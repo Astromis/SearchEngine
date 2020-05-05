@@ -6,8 +6,16 @@
 #include <fstream>
 #include "utils.hpp"
 
-using namespace std;
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <bits/stdc++.h> 
+#include <experimental/filesystem>
 
+using namespace std;
+namespace fs = std::experimental::filesystem;
+
+bool check_dir(const char *dir_path);
+bool create_dir(const char *dir_path);
 
 class InvertIndex;
 
@@ -15,34 +23,86 @@ class SaverData
 {
     public:
 
-    virtual void save(InvertIndex *instance)=0;
-    virtual void load(InvertIndex *instance)=0;
+    virtual void save(InvertIndex *instance, string file_prefix)=0;
+    virtual void load(InvertIndex *instance, string file_prefix)=0;
     //virtual ~SaverData();
-    string dir_path;
+    fs::path const_root_dir_path;
     protected:
 
 };
 
 class BinarySaverData : public SaverData 
 {
+
+    string index_file = "index.bin";
+    string doc2len_file = "D2L.txt";
+    string num2doc_file = "num2doc";
+    string doc2num_file = "doc2num";
+    string other_file = "other.txt";
     
     public:
+        BinarySaverData();
         BinarySaverData(string path);
-        void save(InvertIndex *instance)  override;
-        void load(InvertIndex *instance) override;
+        void save(InvertIndex *instance, string file_prefix)  override;
+        void load(InvertIndex *instance, string file_prefix) override;
 
-        inverted_list load_index();
-        void save_index(inverted_list index);
+        inverted_list load_index(string dir_instance);
+        void save_index(inverted_list index, string dir_instance);
 
-        string dir_path;
-        string index_file = dir_path + "index.bin";
-        string doc2len_file = dir_path + "D2L.txt";
-        string num2doc_file = dir_path + "num2doc";
-        string doc2num_file = dir_path + "doc2num";
-        string other_file = dir_path + "other.txt";
+        
+
+        void SetRootDir();
+
         
 };
 
+class IndexBuffer
+{
+    public:
+        inverted_list index;
+        inverted_list::iterator index_it, index_it_end;
+        ifstream file_handler;
+        string word, index_file;
+        size_t word_count, load_counter;
+        void load_portion(int amount);
+        int load_amount;
+
+        streampos position;
+
+    public:
+        IndexBuffer(const IndexBuffer &);
+        IndexBuffer();
+        IndexBuffer(string file_path, int amount=100);
+        string get_top_word();
+        word_position_map get_top_position_map();
+        int next();
+        inverted_list GetInvertedIndex();
+        IndexBuffer& operator=(const IndexBuffer& obj);
+
+};
+
+
+class IndexBufferO
+{
+    public:
+    inverted_list index;
+    ofstream file_handler;
+    string word, index_file;
+    size_t word_count, save_counter, _capacity;
+    int save_amount;
+    streampos position;
+    int total_words;
+    inverted_list::iterator index_it, index_it_end;
+
+    IndexBufferO();
+    ~IndexBufferO();
+    IndexBufferO(const IndexBufferO &);
+    IndexBufferO(string file_path, int amount=100);
+    void save_portion();
+    int next();
+    IndexBuffer& operator=(const IndexBuffer& obj);
+    word_position_map& operator[](string q);
+};
 /* class DatabaseSaverData : public SaverData 
 {
     public:

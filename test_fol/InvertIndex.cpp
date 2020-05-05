@@ -4,11 +4,8 @@
 #include <utility>
 #include <set>
 
-#define VERBOSE 1
-
-
 mutex mut;
-int InvertIndex::doc_id = 0;
+
 
 //TODO: 
 // make tokenization (boost?)
@@ -20,20 +17,13 @@ int InvertIndex::doc_id = 0;
 
 InvertIndex::InvertIndex()
 {
-   // doc_id = 0;
-    document_count = 0;
-    average_doc_length = 1;
 }
 
 InvertIndex::InvertIndex(string path, string ext)
 {
-    /* pathfolder = path;  
-    extention = ext; */
-    doc_id = 0;
+    pathfolder = path;  
+    extention = ext;
     //ctor
-    document_count = 0;
-    average_doc_length = 1;
-
 }
 
 InvertIndex::~InvertIndex()
@@ -41,76 +31,113 @@ InvertIndex::~InvertIndex()
     //dtor
 }
 
-
 /**
- * @brief index only one file
- * @param file file need to be indexing
- * @return true if successfully
+ * @brief Create an inverted index
+ * Starting with entry point, go through the all directores 
+ * and colect tokens.
+ * @return True if index has been built successifully
  */
-bool InvertIndex::indexing_file(string file)
+bool InvertIndex::build_index()
 {
-    average_doc_length *= document_count;
-    ifstream in;
-    in.open(file.c_str(), ifstream::in);
-    string word;
-    int word_count = 0;
-    while (in >> word)
+    doc_list f;
+    get_dirs(extention ,pathfolder, f);
+    document_count = f.size();
+    for (unsigned int i = 0;i < document_count;i++)
     {
-        //add conditions, that cut all
-        num2doc[doc_id] = file.c_str();
-        doc2num[file.c_str()] = doc_id;
-        index[word][doc_id].push_back((int)(in.tellg()) - (word.length()));
-        
-        //cout << word <<"\r" << flush;
-        
-        word_count++;
-    }
-    
-    //std::cout << endl;
-    
-    doc_length[doc_id] = word_count;
-    average_doc_length += word_count;
-    word_count = 0;
-    document_count++;
-    doc_id++;
-    average_doc_length /= document_count;
-
-}
-
-
-/**
- * @brief Index the files from the vector
- * @param files the vector of the file paths
- * @return True if index has been built successfully
- */
-
-bool InvertIndex::indexing_collection(doc_list& files)
-{  
-    
-    /* for (unsigned int i = 0;i < files.size();i++)
-    {
-        indexing_file(files[i]);
-    } */
-    int starting_point = get_free_memory();
-    while (files.size() > 0)
-    {
-        //FIXME: remove constant value of a memory treshold
-        if((starting_point - get_free_memory()) > 200000)
+        ifstream in;
+        in.open(f[i].c_str(), ifstream::in);
+        string word;
+        int word_count = 0;
+        while (in >> word)
         {
-            cout<<get_free_memory()<<endl;
-            cout<<"The free memory has exceeded the threshold"<<endl;
-            return false;
+            //add conditions, that cut all
+            mut.lock();
+            num2doc[i] = f[i].c_str();
+            doc2num[f[i].c_str()] = i;
+            index[word][i].push_back((int)(in.tellg()) - (word.length()));
+            mut.unlock();
+            word_count++;
         }
-        indexing_file(files[files.size() - 1]);
-        files.pop_back();   
+        doc_length[i] = word_count;
+        average_doc_length += word_count;
+        word_count = 0;
     }
-    
+    average_doc_length /= document_count;
 
     cout<<"Indexing complete in thread id "<<this_thread::get_id()<<". Size: "<< index.size()<<endl;   
     return true;
 }
 
+void InvertIndex::threadIndexing(vector<string> &files, inverted_list &index)
+{
+    vector<string> a(files.begin(), files.begin() + files.size()/ 2);
+    vector<string> b(files.begin() + files.size()/ 2, files.end());
 
+/*     thread thread1(build_index, ref(a));
+    thread thread2(build_index, ref(b));
+    thread1.join();
+    thread2.join(); */
+}
+
+/**
+ * @brief Gef files and dirs in one dir
+ * @param [in] ext Extention of file that need to collect
+ * @param [in] dir Dir path
+ * @param [in] files Files, which contains in dir
+ * @param [in] dirs Dirs,  which contains in dr
+ * @return 0 If everithing is ok
+ */
+int InvertIndex::getdir (const string ext, const string dir, vector<string> &files, queue<string> &dirs)
+{
+    DIR *dp;
+    struct dirent *dirp;
+    if((dp  = opendir(dir.c_str())) == NULL)
+    {
+        cout << "Error(" << errno << ") opening " << dir << endl;
+        return errno;
+    }
+
+    while ((dirp = readdir(dp)) != NULL)
+    {
+        if(dirp->d_type == DT_DIR && string(dirp->d_name) != "." && string(dirp->d_name) != "..")
+
+            dirs.push(dir+"/"+string(dirp->d_name));
+        else
+        //This condition is for the exact file extension. If it is not present, all file names will be appended to a vector.
+        if(ext != "")
+        {
+            if(string(dirp->d_name).find(ext+"\0") != -1)
+                files.push_back(dir+"/"+string(dirp->d_name));
+        }
+        else
+            if(string(dirp->d_name) != "." && string(dirp->d_name) != "..")
+                files.push_back(dir+"/"+string(dirp->d_name));
+    }
+    closedir(dp);
+    return 0;
+}
+
+/**
+ * @brief Collects all files, staring with some dir
+ * @param [in] ext Extention of file that need to collect
+ * @param [in] start_dir Entry dir path
+ * @param [in/out] files Files, which contains in dir
+ * @return True If everithing is ok
+ */
+bool InvertIndex::get_dirs(const string ext, const string start_dir, vector<string> &files)
+{
+    queue<string> dirs = queue<string>();
+    string next_dir;
+
+    getdir(ext, start_dir, files, dirs);
+    while(dirs.size() != 0)
+    {
+        next_dir = dirs.front();
+        dirs.pop();
+        getdir(ext, next_dir, files, dirs);
+    }
+    return true;
+}
 
 /**
  * @brief Performs intersection between vectors of docID
@@ -212,6 +239,7 @@ vector<string> InvertIndex::operator[](string q)
 size_t InvertIndex::get_tfd(string word_instance, int doc_instance)
 {
     size_t tf = index[word_instance][doc_instance].size();
+    
     return tf;
 }
 
@@ -220,8 +248,9 @@ size_t InvertIndex::get_tfd(string word_instance, int doc_instance)
  */
 float InvertIndex::get_idf(string word_instance)
 {
-    float size = index[word_instance].size();
+    int size = index[word_instance].size();
     return log(document_count/size);
+
 }
 
 /**
@@ -229,7 +258,7 @@ float InvertIndex::get_idf(string word_instance)
  */
 float InvertIndex::get_smoothed_idf(string word_instance)
 {
-    float size = index[word_instance].size();
+    int size = index[word_instance].size();
     return log( (document_count - size + 0.5) / (size + 0.5) );
 }
 
@@ -262,10 +291,9 @@ float InvertIndex::BM25_kernel(string word, int document)
 {
     float k = 2;
     float b = 0.75;
-    float numerator = get_tfd(word, document) * (k + 1);
-    numerator = numerator * get_smoothed_idf(word);
-    float denominator =  get_tfd(word, document) + k * (1 - b  + b * doc_length[document] / average_doc_length);
-    return get_smoothed_idf(word) * numerator / denominator;
+    float numerator = get_tfd(word, document) * (k + 1) * get_idf(word);
+    float denumenator =  get_tfd(word, document) + k * (1 - b  + b * doc_length[document] / average_doc_length);
+    return get_smoothed_idf(word) * numerator / denumenator;
 }
 /**
  * @brief Computes BM25 ranking function for quary
@@ -331,25 +359,16 @@ vector< pair<float, string> > InvertIndex::find(vector<string> quary)
  * @brief Saves the inverted index
  * @param saver Object of SaverData famaly classess,
  */ 
-void InvertIndex::save(SaverData& saver, string dir_instance)
+void InvertIndex::save(SaverData& saver)
 {
-    saver.save(this, dir_instance);
-    #ifdef VERBOSE
-    cout<<"Saving complited"<<endl;
-    #endif
+    saver.save(this);
 }
 
 /**
  * @brief Loads the inverted index
  * @param saver Object of SaverData famaly classess,
  */ 
-void InvertIndex::load(SaverData& saver, string dir_instance)
+void InvertIndex::load(SaverData& saver)
 {
-    saver.load(this, dir_instance);
-}
-
-void InvertIndex::clear_index()
-{
-    index.clear();
-    //inverted_list().swap(index);
+    saver.load(this);
 }

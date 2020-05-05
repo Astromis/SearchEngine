@@ -18,7 +18,7 @@ void write_simple_map(mapType map, string filename);
 map<int, string > read_is_map(string filename);
 map<string, int > read_si_map(string filename);
 map<int, float > read_if_map(string filename);
-
+int get_free_memory();
 
 /**
  * @brief Write a map to a file
@@ -29,12 +29,19 @@ map<int, float > read_if_map(string filename);
 template<class mapType>
 void write_simple_map(mapType map, string filename)
 {
-    ofstream myfile;
-    myfile.open (filename, ios::out);
+    ofstream file;
+    file.open (filename, ios::out);
+    if(file.is_open() == false)
+    {
+        cout<< "Error opening file "<<filename<<endl;
+        exit(-1);
+    }
     for(auto i: map)
-        myfile<<i.first<<" "<<i.second<<endl;
-    myfile.close();
+        file<<i.first<<" "<<i.second<<endl;
+    file.close();
 }
+
+
 
 
 #endif

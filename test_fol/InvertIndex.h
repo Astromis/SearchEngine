@@ -22,8 +22,8 @@ using namespace std;
 
 // this vector contains an order number of word in text
 typedef vector<int> position_vector;
-// this map contains documents (its ID) as a key and position vectors as a value
-typedef map<int, position_vector> word_position_map;
+// this map contains documents as a key and position vectors as a value
+typedef map<int,position_vector> word_position_map;
 // this is finally inverted list
 typedef map <string, word_position_map > inverted_list;
 typedef vector<string> doc_list;
@@ -37,10 +37,7 @@ class InvertIndex
         InvertIndex(string path, string ext);
         virtual ~InvertIndex();
 
-
-        bool indexing_file(string file);
-        bool indexing_collection(doc_list& files);
-
+        bool build_index();
         void threadIndexing(vector<string> &files, inverted_list &index);
         vector<int> intersect(vector<int> past, string q2);
         vector<int> MultipleIntersect(vector<string> quary);
@@ -51,8 +48,8 @@ class InvertIndex
         //bool get_word_position_map(word_position_map *response, string &quary);
         //bool get_position_vector(position_vector *response, word_position_map &data, string &quary);
         //utils
-        //int getdir (string ext, string dir, vector<string> &files, queue<string> &dirs);
-        //bool get_dirs(const string ext, const string start_dir, vector<string> &files);
+        int getdir (string ext, string dir, vector<string> &files, queue<string> &dirs);
+        bool get_dirs(const string ext, const string start_dir, vector<string> &files);
 
         // math
         size_t get_tfd(string  word_instance, int doc_instance);
@@ -66,11 +63,8 @@ class InvertIndex
         //int ranking(string quary);
         //int ranking(vector<string> quary);
         
-        void save(SaverData& saver, string dir_instance);
-        void load(SaverData& saver, string dir_instance);
-
-        void clear_index();
-
+        void save(SaverData& saver);
+        void load(SaverData& saver);
 
         vector<string> operator[](string q);
 
@@ -82,9 +76,9 @@ class InvertIndex
         float GetAverLen() { return average_doc_length; }
 
         void SetIndex(inverted_list& list) {index = list;}
-        //void SetPathfolder(string path) {pathfolder = path;}
+        void SetPathfolder(string path) {pathfolder = path;}
         void SetN2D(map<int, string> n2d) {num2doc = n2d;}
-        void SetD2N(map<string, int> d2n) {doc2num = d2n;}
+        void SetD2N(map<string, int> d2n) {doc2num=d2n;}
         void SetD2L(map<int, float> d2l) {doc_length = d2l;}
         void SetDocCount(long dc) {document_count = dc;}
         void SetAvrDocLen(float adl) {average_doc_length = adl;}
@@ -96,10 +90,10 @@ class InvertIndex
         // inverted index - common data structure
         inverted_list index;
         // path at the begging of building of index
-        //string pathfolder;
+        string pathfolder;
         // file extentions that needs to consider
-        //string extention;
-        static int doc_id;
+        string extention;
+
         // tables that defines relations between documents and its indeces
         map<int, string > num2doc;
         map<string, int> doc2num;
@@ -110,6 +104,7 @@ class InvertIndex
         // average document length (need for BM25)
         float average_doc_length;
 };
+
 
 
 #endif // INVERTINDEX_H
