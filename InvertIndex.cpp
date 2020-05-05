@@ -222,7 +222,6 @@ float InvertIndex::get_idf(string word_instance)
 {
     float size = index[word_instance].size();
     return log(document_count/size);
-
 }
 
 /**
