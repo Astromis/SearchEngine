@@ -10,8 +10,8 @@ PYTHONL = -Xlinker -export-dynamic
 
 all: test
 
-test: main.o SaverData.o InvertIndex.o utils.o IndexBuilder.o
-	$(CC) $(INCLUDES) main.o InvertIndex.o SaverData.o IndexBuilder.o utils.o -std=c++17 -o test -g -lstdc++fs
+test: main.o SaverData.o InvertedIndex.o utils.o IndexBuilder.o Ranker.o IndexInterface.o
+	$(CC) $(INCLUDES) main.o InvertedIndex.o SaverData.o IndexBuilder.o utils.o Ranker.o IndexInterface.o -std=c++17 -o test -g -lstdc++fs
     
 main.o: main.cpp
 	$(CC) $(CFLAGS) -c -std=c++17 main.cpp 
@@ -19,8 +19,11 @@ main.o: main.cpp
 SaverData.o: SaverData.cpp
 	$(CC) $(CFLAGS) SaverData.cpp	-lstdc++fs
 
-InvertIndex.o: InvertIndex.cpp
-	$(CC) $(CFLAGS) -c -std=c++17 InvertIndex.cpp
+InvertedIndex.o: InvertedIndex.cpp
+	$(CC) $(CFLAGS) -c -std=c++17 InvertedIndex.cpp
+
+IndexInterface.o: IndexInterface.cpp
+	$(CC) $(CFLAGS) -c -std=c++17 IndexInterface.cpp
 
 utils.o: utils.cpp
 	$(CC) $(CFLAGS) -c -std=c++17 utils.cpp
@@ -28,6 +31,8 @@ utils.o: utils.cpp
 IndexBuilder.o: IndexBuilder.cpp
 	$(CC) $(CFLAGS) -c -std=c++17 IndexBuilder.cpp
 
+Ranker.o: Ranker.cpp
+	$(CC) $(CFLAGS) -c -std=c++17 Ranker.cpp
 clean:
 	rm -rf *.o *.cxx *.py *.so test
 	

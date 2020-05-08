@@ -78,7 +78,7 @@ void BinarySaverData::save_index(inverted_list index, string file_path)
  * @brief General saver function that saces all InvertedIndex structure
  * @param [in] Pointer on structure. Typically "this"
  */
-void BinarySaverData::save(InvertIndex *instance, string dir_instance)
+void BinarySaverData::save(InvertedIndex *instance, string dir_instance)
 {
     fs::path root_dir_path = const_root_dir_path;
     fs::path saving_path = root_dir_path.append(dir_instance);
@@ -89,24 +89,24 @@ void BinarySaverData::save(InvertIndex *instance, string dir_instance)
             exit(-1);
         }
 
-    write_simple_map(instance->GetD2L(), saving_path.append(doc2len_file));
+    write_simple_map(instance->doc_length, saving_path.append(doc2len_file));
     saving_path = saving_path.parent_path();
 
-    write_simple_map(instance->GetN2D(), saving_path.append(num2doc_file));
+    write_simple_map(instance->num2doc, saving_path.append(num2doc_file));
     saving_path = saving_path.parent_path();
 
-    write_simple_map(instance->GetD2N(), saving_path.append(doc2num_file));
+    write_simple_map(instance->doc2num, saving_path.append(doc2num_file));
     saving_path = saving_path.parent_path();
     #ifdef DEBUG
     cout<<"Saving path: "<<saving_path<<endl;
-    cout<<"Amount of words in index: "<<instance->GetIndex().size()<<endl;
+    cout<<"Amount of words in index: "<<instance->index.size()<<endl;
     #endif
-    save_index(instance->GetIndex(), saving_path.append(index_file));
+    save_index(instance->index, saving_path.append(index_file));
     saving_path = saving_path.parent_path();
 
     ofstream f(saving_path.append(other_file), ios::out);
-    f<<instance->GetAverLen()<<endl;
-    f<<instance->GetDocCount()<<endl;
+    f<<instance->average_doc_length<<endl;
+    f<<instance->document_count<<endl;
     f.close();
 
 }
@@ -149,7 +149,7 @@ inverted_list BinarySaverData::load_index(string file_path)
  * @brief General loader function that loads all InvertedIndex structure
  * @param [in] Pointer on structure. Typically "this"
  */
-void BinarySaverData::load(InvertIndex *instance, string dir_instance)
+void BinarySaverData::load(InvertedIndex *instance, string dir_instance)
 {
     fs::path root_dir_path = const_root_dir_path;
 
@@ -160,24 +160,24 @@ void BinarySaverData::load(InvertIndex *instance, string dir_instance)
         exit(-1);
     }
     inverted_list tmp = load_index(loading_path.append(index_file));
-    instance->SetIndex(tmp);
+    instance->index = tmp;
     loading_path = loading_path.parent_path();
 
-    instance->SetN2D(read_is_map(loading_path.append(num2doc_file)));
+    instance->num2doc = read_is_map(loading_path.append(num2doc_file));
     loading_path = loading_path.parent_path();
 
-    instance->SetD2N(read_si_map(loading_path.append(doc2num_file)));
+    instance->doc2num = read_si_map(loading_path.append(doc2num_file));
     loading_path = loading_path.parent_path();
 
-    instance->SetD2L(read_if_map(loading_path.append(doc2len_file)));
+    instance->doc_length = read_if_map(loading_path.append(doc2len_file));
     loading_path = loading_path.parent_path();
 
     ifstream f(loading_path.append(other_file));
     string tmpf, tmpl;
     f>>tmpf;
     f>>tmpl;
-    instance->SetAvrDocLen(stof(tmpf));
-    instance->SetDocCount(stol(tmpl));
+    instance->average_doc_length = stof(tmpf);
+    instance->document_count = stol(tmpl);
     f.close();
 
 }

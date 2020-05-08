@@ -1,7 +1,7 @@
 #ifndef SAVERDATA_H
 #define SAVERDATA_H
 
-#include "InvertIndex.h"
+#include "InvertedIndex.h"
 #include <iostream>
 #include <fstream>
 #include "utils.hpp"
@@ -23,8 +23,8 @@ class SaverData
 {
     public:
 
-    virtual void save(InvertIndex *instance, string file_prefix)=0;
-    virtual void load(InvertIndex *instance, string file_prefix)=0;
+    virtual void save(InvertedIndex *instance, string file_prefix)=0;
+    virtual void load(InvertedIndex *instance, string file_prefix)=0;
     //virtual ~SaverData();
     fs::path const_root_dir_path;
     protected:
@@ -43,8 +43,8 @@ class BinarySaverData : public SaverData
     public:
         BinarySaverData();
         BinarySaverData(string path);
-        void save(InvertIndex *instance, string file_prefix)  override;
-        void load(InvertIndex *instance, string file_prefix) override;
+        void save(InvertedIndex *instance, string file_prefix)  override;
+        void load(InvertedIndex *instance, string file_prefix) override;
 
         inverted_list load_index(string dir_instance);
         void save_index(inverted_list index, string dir_instance);

@@ -1,6 +1,8 @@
 #include "IndexBuilder.hpp"
-#include "InvertIndex.h"
+#include "InvertedIndex.h"
 #include "SaverData.h"
+#include "Ranker.hpp"
+#include "IndexInterface.hpp"
 
 #include "utils.hpp"
 
@@ -40,28 +42,32 @@ int main(int argc, char **argv)
     } */
 
     
-    InvertIndex inv;
-    IndexBuilder builder_t("/home/astromis/output_", "txt", 1);
-    builder_t.build_index_from_collection(&inv);
+    InvertedIndex inv;
+    IndexBuilder builder_t("test_fol/", "", 1);
+    builder_t.indexing_collection(inv);
     string root = "store/";
     string inst = "instance1/";
     BinarySaverData saver(root);
-    //cout<<"Saving..."<<endl;
-    //inv.save(saver, inst); 
-    //InvertIndex loaded_in;
-    //cout<<"Loading..."<<endl;
-    //loaded_in.load(saver, inst);
-    string input = "частота генератор";
+    cout<<"Saving..."<<endl;
+    inv.save(saver, inst); 
+    InvertedIndex loaded_in;
+    cout<<"Loading..."<<endl;
+    loaded_in.load(saver, inst);
+    string input = "#include int";
     //cin>>input;
+    IndexInterface ifsace(loaded_in);
+    vector<int> founded_docs;
+
+    BM25Ranker ranker(inv);
+
     while(1)
     {
     getline(cin, input);
     vector<string> quary;
     split(input, quary, ' ');
-       
-    for(auto& i:  inv.find(quary))
-        cout<<i.first<<" "<<i.second<<endl;  
-
+    founded_docs = ifsace.find(quary);
+    for(auto& i:  ranker.rank(founded_docs, quary))
+        cout<<i.first<<" "<<inv.num2doc[i.second]<<endl;  
     }
 //here
     

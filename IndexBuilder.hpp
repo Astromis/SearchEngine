@@ -1,6 +1,6 @@
 #include <vector>
 #include <string>
-#include "InvertIndex.h"
+#include "InvertedIndex.h"
 #include "SaverData.h"
 #include <sys/sysinfo.h>
 #include <fstream>
@@ -27,7 +27,7 @@ class IndexBuilder
 {
     private:
     int thread_count;
-    vector<InvertIndex> index_vector;
+    vector<InvertedIndex> index_vector;
     vector<thread> threads;
     doc_list collection;
     map<string, int> file_sizes;
@@ -39,7 +39,10 @@ class IndexBuilder
     bool get_dirs(const string ext, const string start_dir, vector<string> &files);
     int getdir(const string ext, const string dir, vector<string> &files, queue<string> &dirs);
     bool build_index(InvertIndex* idx, doc_list files);
+    
+    //bool indexing_file(string file);
     doc_list form_the_doclist();
+    bool _indexing_collection(doc_list& files, InvertedIndex& index);
 
     public:
     IndexBuilder();
@@ -48,6 +51,10 @@ class IndexBuilder
     ~IndexBuilder();
     
     bool build_index_from_collection(InvertIndex* idx);
+    bool indexing_file(string file, InvertedIndex& index);
+    bool indexing_collection(InvertedIndex& index);
+
+
     void BSBITest();
     void threadIndexing(doc_list &files, inverted_list &index);
     bool is_collection_empty();

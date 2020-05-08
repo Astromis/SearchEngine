@@ -35,15 +35,6 @@ void IndexBuilder::set_start_path(string start_path)
  * @return True if index has been built successfully
  */
 
-/* bool IndexBuilder::build_index(InvertIndex* idx, doc_list files)
-{
-    idx->indexing_collection(files);
-} */
-
-bool IndexBuilder::build_index_from_collection(InvertIndex* idx)
-{
-    idx->indexing_collection(collection);
-}
 
 void IndexBuilder::threadIndexing(vector<string> &files, inverted_list &index)
 {
@@ -177,10 +168,84 @@ word_position_map position_map_merge(word_position_map m1, word_position_map m2)
     return m2;
 }
 
+
+/**
+ * @brief index only one file
+ * @param file file need to be indexing
+ * @return true if successfully
+ */
+bool IndexBuilder::indexing_file(string file, InvertedIndex& index)
+{
+    index.average_doc_length *= index.document_count;
+    ifstream in;
+    in.open(file.c_str(), ifstream::in);
+    string word;
+    int word_count = 0;
+    while (in >> word)
+    {
+        //add conditions, that cut all
+        index.num2doc[index.doc_id] = file.c_str();
+        index.doc2num[file.c_str()] = index.doc_id;
+        index.index[word][index.doc_id].push_back((int)(in.tellg()) - (word.length()));
+        
+        //cout << word <<"\r" << flush;
+        
+        word_count++;
+    }
+    
+    //std::cout << endl;
+    
+    index.doc_length[index.doc_id] = word_count;
+    index.average_doc_length += word_count;
+    word_count = 0;
+    index.document_count++;
+    index.doc_id++;
+    index.average_doc_length /= index.document_count;
+
+}
+
+
+/**
+ * @brief Index the files from the vector
+ * @param files the vector of the file paths
+ * @return True if index has been built successfully
+ */
+
+bool IndexBuilder::_indexing_collection(doc_list& files, InvertedIndex& index)
+{  
+    
+    /* for (unsigned int i = 0;i < files.size();i++)
+    {
+        indexing_file(files[i]);
+    } */
+    int starting_point = get_free_memory();
+    while (files.size() > 0)
+    {
+        //FIXME: remove constant value of a memory treshold
+        if((starting_point - get_free_memory()) > 200000)
+        {
+            cout<<get_free_memory()<<endl;
+            cout<<"The free memory has exceeded the threshold"<<endl;
+            return false;
+        }
+        indexing_file(files[files.size() - 1], index);
+        files.pop_back();   
+    }
+    
+
+    cout<<"Indexing complete in thread id "<<this_thread::get_id()<<". Size: "<< index.index.size()<<endl;   
+    return true;
+}
+
+bool IndexBuilder::indexing_collection(InvertedIndex& index)
+{  
+    return _indexing_collection(collection, index);
+}
+
 void IndexBuilder::BSBITest()
 
 {
-    vector<InvertIndex> inv(1);
+    vector<InvertedIndex> inv(1);
     //IndexBuilder builder_t("", "", 1);
     set_start_path("test_fol/");
     string root = "store/";
@@ -190,12 +255,12 @@ void IndexBuilder::BSBITest()
     int saving_counter = 1;
     while (!is_collection_empty())
     {
-        if(!build_index_from_collection(&inv[inv.size()-1])){
+        if(!_indexing_collection(collection, inv[inv.size()-1])){
             temp_name = generate_name(root);
             temp_storages.push_back(temp_name);
             inv[inv.size()-1].save(saver, temp_name);
             inv[inv.size()-1].clear_index();
-            inv.push_back(InvertIndex());
+            inv.push_back(InvertedIndex());
             saving_counter++;
         }
         //else exit(1);
@@ -261,54 +326,3 @@ void IndexBuilder::BSBITest()
     cout<<"Merging complited"<<endl;
     //exit(1);
 } 
-/*
-The core of large-scale indexing algorithm
-
-    IndexBuffer b1("store/instance1/index.bin");
-    IndexBuffer b2("store/instance2/index.bin");
-    vector<IndexBuffer> indicies = {b1, b2};
-    inverted_list result;
-    string min;
-    word_position_map temp;
-    while(indicies.size() > 1)
-    {
-        //find upper alphabetic word
-        min = indicies[0].get_top_word();
-        for(int i=1; i < indicies.size(); i++)
-        {
-            if(min.compare(indicies[i].get_top_word()) > 0) 
-            {
-                min = indicies[i].get_top_word();
-            }
-        }
-        temp.clear();
-        //merge and push to the result
-        for(int i=0; i < indicies.size(); i++)
-        {
-            if(indicies[i].get_top_word().compare(min) == 0)
-            {
-                if(temp.size() == 0)
-                {
-                    temp = indicies[i].get_top_position_map();
-                    if(indicies[i].next())
-                    {
-                        indicies.erase(indicies.begin() + i);
-                    }
-                }
-                else
-                {
-                    temp = position_map_merge(temp, indicies[i].get_top_position_map());
-                    if(indicies[i].next())
-                    {
-                        indicies.erase(indicies.begin() + i);
-                    }
-                }
-            }
-        }
-        result[min] = temp;
-    }
-    //merge remain map
-    for(auto i:indicies[0].GetInvertedIndex())
-    {
-        result[i.first] = i.second;
-    } */
