@@ -111,8 +111,8 @@ int IndexInterface::MultipleIntersect(vector<string> quary, vector<int>& result)
 
 /**
  * @breif Overload [] operator by getting a word_position_map
- * @param [in] q Quary string
- * @return resp Word position map 
+ * @param q Quary string
+ * @return Word position map 
  */
 vector<string> IndexInterface::operator[](string q)
 {
@@ -124,7 +124,8 @@ vector<string> IndexInterface::operator[](string q)
 }
 
 /**
- * @bried Get a frequency of word through all documents
+ * @brief Get a frequency of word through all documents
+ * @param word word to search  
  */
 float IndexInterface::get_tf(string word)
 {
@@ -137,7 +138,10 @@ float IndexInterface::get_tf(string word)
     return freq;
 }
 
-
+/**
+ * @brief Function to find some phrase in InvIdx
+ * @param quary_words Vector with tokens to find
+ */
 vector<int>  IndexInterface::find(vector<string> quary_words)
 {
     vector<int>  doc_ids;

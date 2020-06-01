@@ -34,6 +34,7 @@ void InvertedIndex::save(SaverData& saver, string dir_instance)
 /**
  * @brief Loads the inverted index
  * @param saver Object of SaverData famaly classess,
+ * @param dir_instance Directoy to store in
  */ 
 void InvertedIndex::load(SaverData& saver, string dir_instance)
 {

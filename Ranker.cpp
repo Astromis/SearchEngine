@@ -51,7 +51,7 @@ float BM25Ranker::get_tf_idf(string word, int doc_id)
 }
 
 /**
- * @bried Get a frequency of word through all documents
+ * @brief Get a frequency of word through all documents
  */
 float BM25Ranker::get_tf(string word)
 {
@@ -78,9 +78,9 @@ float BM25Ranker::BM25_kernel(string word, int doc_id)
 }
 /**
  * @brief Computes BM25 ranking function for quary
- * @param [in] word Vector of quares
- * @param [in] doc Document
- * @retrun BM25 result for a quary
+ * @param  word Vector of quares
+ * @param  doc Document
+ * @return BM25 result for a quary
  */
  float BM25Ranker::BM25(vector<string> word, int doc_id)
 {
@@ -92,6 +92,11 @@ float BM25Ranker::BM25_kernel(string word, int doc_id)
     return tmp;
 } 
 
+/**
+ * @brief Perform the ranking of result
+ * @param doc_ids a reference to document IDs
+ * @param quary_words vector of tokens to search
+ */
 vector< pair<float, int> > BM25Ranker::rank(vector<int>& doc_ids, vector<string> quary_words)
 {
     vector< pair<float, int> > result;

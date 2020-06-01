@@ -56,6 +56,9 @@ class BinarySaverData : public SaverData
         
 };
 
+/**
+ * Class that allows to read index partitially. Used in large scale indexing
+ */ 
 class IndexBuffer
 {
     public:
@@ -81,7 +84,9 @@ class IndexBuffer
 
 };
 
-
+/**
+ * Class that allows to store index partitially. Used in large scale indexing
+ */ 
 class IndexBufferO
 {
     public:

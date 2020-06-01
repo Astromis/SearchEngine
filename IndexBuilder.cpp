@@ -28,13 +28,6 @@ void IndexBuilder::set_start_path(string start_path)
     get_dirs(ext, start_path, collection);
 
 }
-/**
- * @brief Create an inverted index for a given instane of InvertedIndex class
- * Starting with entry point, go through the all directores 
- * and colect tokens.
- * @return True if index has been built successfully
- */
-
 
 void IndexBuilder::threadIndexing(vector<string> &files, inverted_list &index)
 {
@@ -153,6 +146,11 @@ bool IndexBuilder::is_collection_empty()
     return collection.size() > 0 ? false : true;
 }
 
+/**
+ * @brief Generate names for saving
+ * @param base base name
+ * @return generated name with slash 
+ */ 
 string generate_name(string base)
 {
     static string aux = "instance";
@@ -170,8 +168,9 @@ word_position_map position_map_merge(word_position_map m1, word_position_map m2)
 
 
 /**
- * @brief index only one file
+ * @brief dummy(tokenization by spaces) indexing of only one file
  * @param file file need to be indexing
+ * @param index the reference of inverted index structure wehere the data will stored in
  * @return true if successfully
  */
 bool IndexBuilder::indexing_file(string file, InvertedIndex& index)
@@ -206,9 +205,10 @@ bool IndexBuilder::indexing_file(string file, InvertedIndex& index)
 
 
 /**
- * @brief Index the files from the vector
- * @param files the vector of the file paths
- * @return True if index has been built successfully
+ * @brief Index the files from the collection of documents
+ * @param files the reference of a vector of the file paths
+ * @param index the reference of inverted index structure wehere the data will stored in
+ * @return True if index has been built successfully, return false if memory limit was exceeded
  */
 
 bool IndexBuilder::_indexing_collection(doc_list& files, InvertedIndex& index)
@@ -242,8 +242,10 @@ bool IndexBuilder::indexing_collection(InvertedIndex& index)
     return _indexing_collection(collection, index);
 }
 
+/**
+ * @brief Function for large scale indexing with storing intermidiate results on the hard drive(under development)
+ */
 void IndexBuilder::BSBITest()
-
 {
     vector<InvertedIndex> inv(1);
     //IndexBuilder builder_t("", "", 1);
