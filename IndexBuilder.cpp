@@ -1,5 +1,8 @@
 #include "IndexBuilder.hpp"
 #include "SaverData.h"
+#include <cwctype>
+
+#include <clocale>
 
 IndexBuilder::IndexBuilder()
 {
@@ -166,6 +169,22 @@ word_position_map position_map_merge(word_position_map m1, word_position_map m2)
     return m2;
 }
 
+// http://insanecoding.blogspot.com/2011/11/how-to-read-in-file-in-c.html
+std::string get_file_contents(const char *filename)
+{
+  std::ifstream in(filename, std::ios::in);
+  if (in)
+  {
+    std::string contents;
+    in.seekg(0, std::ios::end);
+    contents.resize(in.tellg());
+    in.seekg(0, std::ios::beg);
+    in.read(&contents[0], contents.size());
+    in.close();
+    return(contents);
+  }
+  throw(errno);
+}
 
 /**
  * @brief dummy(tokenization by spaces) indexing of only one file
@@ -176,10 +195,26 @@ word_position_map position_map_merge(word_position_map m1, word_position_map m2)
 bool IndexBuilder::indexing_file(string file, InvertedIndex& index)
 {
     index.average_doc_length *= index.document_count;
-    ifstream in;
+    int word_count = 0;
+    string content;
+
+    content = get_file_contents(file.c_str()); 
+
+    int position = 0;
+    
+    for (auto i = strtok(&content[0], " "); i != NULL; i = strtok(NULL, " "))
+    {
+
+        index.num2doc[index.doc_id] = file.c_str();
+        index.doc2num[file.c_str()] = index.doc_id;
+        index.index[sp.stemm(i)][index.doc_id].push_back(position);
+        
+        position++;
+        word_count++;
+    }
+    /* ifstream in;
     in.open(file.c_str(), ifstream::in);
     string word;
-    int word_count = 0;
     while (in >> word)
     {
         //add conditions, that cut all
@@ -191,7 +226,7 @@ bool IndexBuilder::indexing_file(string file, InvertedIndex& index)
         
         word_count++;
     }
-    
+     */
     //std::cout << endl;
     
     index.doc_length[index.doc_id] = word_count;

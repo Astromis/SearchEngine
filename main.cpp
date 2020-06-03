@@ -3,6 +3,7 @@
 #include "SaverData.h"
 #include "Ranker.hpp"
 #include "IndexInterface.hpp"
+#include "contrib/Stemming-ru/source/StemmerPorter.h"
 
 #include "utils.hpp"
 
@@ -41,34 +42,39 @@ int main(int argc, char **argv)
         return 0;
     } */
 
-    
+    StemmerPorter sp;
     InvertedIndex inv;
-    IndexBuilder builder_t("test_fol/", "", 1);
+    IndexBuilder builder_t("russian/", "", 1);
     builder_t.indexing_collection(inv);
-    string root = "store/";
+   /*  string root = "store/";
     string inst = "instance1/";
     BinarySaverData saver(root);
     cout<<"Saving..."<<endl;
     inv.save(saver, inst); 
     InvertedIndex loaded_in;
     cout<<"Loading..."<<endl;
-    loaded_in.load(saver, inst);
-    string input = "#include int";
+    loaded_in.load(saver, inst);*/
+    string input = "#include int"; 
     //cin>>input;
-    IndexInterface ifsace(loaded_in);
+    IndexInterface ifsace(inv);
     vector<int> founded_docs;
 
     BM25Ranker ranker(inv);
 
-    while(1)
+   /*  while(1)
     {
     getline(cin, input);
     vector<string> quary;
     split(input, quary, ' ');
+    for(int i=0; i< quary.size(); i++)
+    {
+        quary[i] = sp.stemm(quary[i]);
+        cout<<"LOG:"<<quary[i]<<endl;
+    }
     founded_docs = ifsace.find(quary);
     for(auto& i:  ranker.rank(founded_docs, quary))
         cout<<i.first<<" "<<inv.num2doc[i.second]<<endl;  
-    }
+    } */
 //here
     
 

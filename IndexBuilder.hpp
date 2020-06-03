@@ -4,6 +4,7 @@
 #include "SaverData.h"
 #include <sys/sysinfo.h>
 #include <fstream>
+#include "contrib/Stemming-ru/source/StemmerPorter.h"
 
 
 struct sysinfo_st 
@@ -26,6 +27,7 @@ struct sysinfo_st
 class IndexBuilder
 {
     private:
+    StemmerPorter sp;
     int thread_count;
     vector<InvertedIndex> index_vector;
     vector<thread> threads;
