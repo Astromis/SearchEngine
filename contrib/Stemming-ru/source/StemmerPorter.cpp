@@ -47,6 +47,16 @@ string StemmerPorter::stemm(string word)
 	return converter.to_bytes(stemmed);
 }
 
+wstring StemmerPorter::stemm(wstring word)
+{
+    
+    // get rid of the punctuation marks
+	//w_word.erase(std::remove_if(w_word.begin(), w_word.end(),
+	//[](wchar_t ch) { return !::iswalnum(ch); }), w_word.end());
+	setlocale(LC_ALL, "");
+	return  _stemm_word(word);;
+}
+
 wstring StemmerPorter::_stemm_word(wstring s) {
 
     transform(s.begin(), s.end(), s.begin(), towupper);

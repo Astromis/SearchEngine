@@ -10,8 +10,8 @@ PYTHONL = -Xlinker -export-dynamic
 
 all: test
 
-test: main.o SaverData.o InvertedIndex.o utils.o IndexBuilder.o Ranker.o IndexInterface.o StemmerPorter.o
-	$(CC) $(INCLUDES) main.o InvertedIndex.o SaverData.o IndexBuilder.o utils.o Ranker.o IndexInterface.o StemmerPorter.o -std=c++17 -o test -g -lstdc++fs
+test: main.o SaverData.o InvertedIndex.o utils.o IndexBuilder.o Ranker.o IndexInterface.o StemmerPorter.o Preprocessing.o
+	$(CC) $(INCLUDES) main.o InvertedIndex.o SaverData.o IndexBuilder.o utils.o Ranker.o IndexInterface.o StemmerPorter.o  preprocessing.o -std=c++17 -o test -g -lstdc++fs
     
 main.o: main.cpp
 	$(CC) $(CFLAGS) -c -std=c++17 main.cpp 
@@ -36,6 +36,10 @@ Ranker.o: Ranker.cpp
 
 StemmerPorter.o: contrib/Stemming-ru/source/StemmerPorter.cpp
 	$(CC) $(CFLAGS) -c -std=c++17 contrib/Stemming-ru/source/StemmerPorter.cpp
+
+Preprocessing.o: preprocessing.cpp
+	$(CC) $(CFLAGS) -c -std=c++17 preprocessing.cpp
+
 clean:
 	rm -rf *.o *.cxx *.py *.so test
 	

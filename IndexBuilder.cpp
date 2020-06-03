@@ -9,8 +9,9 @@ IndexBuilder::IndexBuilder()
 
 }
 
-IndexBuilder::IndexBuilder(string start_path, string ext, int thread_num)
+IndexBuilder::IndexBuilder(string start_path, Preprocessing& preproc, string ext, int thread_num)
 {
+    preprocessor = preproc;
     thread_count = thread_num;
     start_path = start_path;
     ext = ext;
@@ -196,13 +197,13 @@ bool IndexBuilder::indexing_file(string file, InvertedIndex& index)
 {
     index.average_doc_length *= index.document_count;
     int word_count = 0;
-    string content;
+    //string content;
 
-    content = get_file_contents(file.c_str()); 
+    //content = get_file_contents(file.c_str()); 
 
-    int position = 0;
+    //int position = 0;
     
-    for (auto i = strtok(&content[0], " "); i != NULL; i = strtok(NULL, " "))
+    /* for (auto i = strtok(&content[0], " "); i != NULL; i = strtok(NULL, " "))
     {
 
         index.num2doc[index.doc_id] = file.c_str();
@@ -211,8 +212,8 @@ bool IndexBuilder::indexing_file(string file, InvertedIndex& index)
         
         position++;
         word_count++;
-    }
-    /* ifstream in;
+    } */
+    ifstream in;
     in.open(file.c_str(), ifstream::in);
     string word;
     while (in >> word)
@@ -220,13 +221,11 @@ bool IndexBuilder::indexing_file(string file, InvertedIndex& index)
         //add conditions, that cut all
         index.num2doc[index.doc_id] = file.c_str();
         index.doc2num[file.c_str()] = index.doc_id;
-        index.index[word][index.doc_id].push_back((int)(in.tellg()) - (word.length()));
-        
-        //cout << word <<"\r" << flush;
-        
+        index.index[preprocessor.process(word)][index.doc_id].push_back((int)(in.tellg()) - (word.length()));
+            
         word_count++;
     }
-     */
+    
     //std::cout << endl;
     
     index.doc_length[index.doc_id] = word_count;

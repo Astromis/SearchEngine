@@ -49,6 +49,7 @@ public:
 	StemmerPorter();
 
 	string stemm(string word);
+	wstring stemm(wstring word);
 
 	private:
 

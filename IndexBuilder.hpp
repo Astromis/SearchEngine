@@ -5,29 +5,12 @@
 #include <sys/sysinfo.h>
 #include <fstream>
 #include "contrib/Stemming-ru/source/StemmerPorter.h"
-
-
-struct sysinfo_st 
-{
-    long uptime;             /* Seconds since boot */
-    unsigned long loads[3];  /* 1, 5, and 15 minute load averages */
-    unsigned long totalram;  /* Total usable main memory size */
-    unsigned long freeram;   /* Available memory size */
-    unsigned long sharedram; /* Amount of shared memory */
-    unsigned long bufferram; /* Memory used by buffers */
-    unsigned long totalswap; /* Total swap space size */
-    unsigned long freeswap;  /* swap space still available */
-    unsigned short procs;    /* Number of current processes */
-    unsigned long totalhigh; /* Total high memory size */
-    unsigned long freehigh;  /* Available high memory size */
-    unsigned int mem_unit;   /* Memory unit size in bytes */
-    char _f[20-2*sizeof(long)-sizeof(int)]; /* Padding for libc5 */
-};
+#include "preprocessing.hpp"
     
 class IndexBuilder
 {
     private:
-    StemmerPorter sp;
+    Preprocessing preprocessor;
     int thread_count;
     vector<InvertedIndex> index_vector;
     vector<thread> threads;
@@ -48,7 +31,7 @@ class IndexBuilder
 
     public:
     IndexBuilder();
-    IndexBuilder(string start_path, string ext = "", int thread_num=1);
+    IndexBuilder(string start_path, Preprocessing& preproc, string ext = "",  int thread_num=1 );
     void set_start_path(string start_path);
     ~IndexBuilder();
     

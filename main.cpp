@@ -4,7 +4,7 @@
 #include "Ranker.hpp"
 #include "IndexInterface.hpp"
 #include "contrib/Stemming-ru/source/StemmerPorter.h"
-
+#include "preprocessing.hpp"
 #include "utils.hpp"
 
 #include <map>
@@ -44,7 +44,11 @@ int main(int argc, char **argv)
 
     StemmerPorter sp;
     InvertedIndex inv;
-    IndexBuilder builder_t("russian/", "", 1);
+    inv.document_count = 0;
+    inv.average_doc_length = 0;
+    
+    Preprocessing preproc(true, true, true);
+    IndexBuilder builder_t("russian/", preproc, "", 1);
     builder_t.indexing_collection(inv);
    /*  string root = "store/";
     string inst = "instance1/";
@@ -61,20 +65,20 @@ int main(int argc, char **argv)
 
     BM25Ranker ranker(inv);
 
-   /*  while(1)
+    while(1)
     {
     getline(cin, input);
     vector<string> quary;
     split(input, quary, ' ');
     for(int i=0; i< quary.size(); i++)
     {
-        quary[i] = sp.stemm(quary[i]);
+        quary[i] = preproc.process(quary[i]);
         cout<<"LOG:"<<quary[i]<<endl;
     }
     founded_docs = ifsace.find(quary);
     for(auto& i:  ranker.rank(founded_docs, quary))
         cout<<i.first<<" "<<inv.num2doc[i.second]<<endl;  
-    } */
+    }
 //here
     
 
