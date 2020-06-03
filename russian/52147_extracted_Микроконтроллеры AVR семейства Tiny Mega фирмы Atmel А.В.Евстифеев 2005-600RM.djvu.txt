@@ -1,0 +1,37 @@
+Часть 4. Программирование микроконтроллеров семейств Tiny и Mega 
+lpm rO,Z + 
+ld rl,Y+ 
+cpse rO,rl 
+jmp Error 
+sbiw loophi:looplo,1 
+brne Rdloop 
+;Возврат в секцию прикладной программы 
+Return: 
+Ids tempi,SPMCR 
+sbrs tempi,RWWSB ;Если RWWSB установлен, доступ в 
+;секцию RWW запрещен 
+ret 
+;Разрешить адресацию области RWW 
+ldi spmcrval, A«RWWSRE) | A«SPMEN) 
+call Do_spm 
+rjmp Return 
+Do_spm: ;Операция определяется содержимым 
+;spmcrval. Проверить завершение 
+;предыдущей операции 
+Wait_spm: 
+Ids tempi,SPMCR 
+sbrc tempi,SPMEN 
+rjmp Wait_spm 
+;Запретить прерывания, сохранить регистр статуса 
+in temp2,SREG 
+cli 
+/Убедиться в отсутствии записи в EEPROM 
+Wait_ee: 
+Sbic EECR,EEWE 
+rjmp Wait_ee 
+sts SPMCR,spmcrval 
+spm 
+/Восстановить регистр SREG (для повторного разрешения прерываний 
+out SREG,temp2 
+ret 
+-540- 

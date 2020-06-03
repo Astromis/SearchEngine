@@ -1,0 +1,38 @@
+Глава 26. Самопрограммирование микроконтроллеров семейства Mega 
+;Адрес 1-го байта в ОЗУ передается в указателе Y 
+;Адрес 1-го байта в FLASH-памяти передается в указателе Z 
+.equ PAGESIZEB = PAGESIZE*2 ; размер страницы в байтах 
+.org SMALLBOOTSTART 
+Write_page: 
+/Стереть страницу 
+ldi spmcrval, A«PGERS) I A«SPMEN) 
+call Do_spm 
+;Разрешить адресацию области RWW 
+ldi spmcrval, A«RWWSRE) | A«SPMEN) 
+call Do_spm 
+;Передать данные из ОЗУ в буфер страницы 
+ldi looplo,low(PAGESIZEB) /Инициализировали счетчик байтов 
+ldi loophi,high(PAGESIZEB) 
+Wrloop: 
+Id rO,Y+ 
+Id rl,Y+ 
+ldi spmcrval, A«SPMEN) 
+call Do_spm 
+adiw ZH:ZL,2 
+sbiw loophi:looplo,2 
+brne Wrloop 
+/Записать страницу 
+subi ZL,low(PAGESIZEB) /Восстановили указатель 
+subci ZH,high(PAGESIZEB) 
+ldi spmcrval, A«PGWRT) | A«SPMEN) 
+call Do_spm 
+/Разрешить адресацию области RWW 
+ldi spmcrval, A«RWWSRE) | A«SPMEN) 
+call Do_spm 
+/Проконтролировать записанные данные 
+ldi looplo,low(PAGESIZEB) /Инициализировали счетчик байтов 
+ldi loophi,high(PAGESIZEB) 
+subi YL,low(PAGESIZEB) /Восстановили указатель 
+subci YH,high(PAGESIZEB) 
+Rdloop: 
+-539- 

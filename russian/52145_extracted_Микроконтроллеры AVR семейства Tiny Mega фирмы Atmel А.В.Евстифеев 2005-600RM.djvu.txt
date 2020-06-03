@@ -1,0 +1,39 @@
+Часть 4. Программирование микроконтроллеров семейств Tiny и Mega 
+/Записать страницу 
+subi ZL,low(PAGESIZEB) /Восстановили указатель 
+subci ZH,high(PAGESIZEB) 
+ldi spmcrval, A«PGWRT) | A«SPMEN) 
+call Do_spm 
+;Разрешить адресацию области RWW 
+ldi spmcrval, A«RWWSRE) | A«SPMEN) 
+call Do_spm 
+/Проконтролировать записанные данные 
+ldi looplo,low(PAGESIZEB) /Инициализировали счетчик байтов 
+ldi loophi,high(PAGESIZEB) 
+subi YL,low(PAGESIZEB) /Восстановили указатель 
+subci YH,high(PAGESIZEB) 
+Rdloop: 
+lpm rO,Z+* 
+Id rl,Y+ 
+cpse rO,rl 
+jmp Error 
+sbiw loophi:looplo,1 
+brne Rdloop 
+/Возврат в секцию прикладной программы 
+Return: 
+Ids tempi,SPMCR 
+sbrs tempi,RWWSB /Если RWWSB установлен, доступ в 
+/секцию RWW запрещен 
+ret 
+;Разрешить адресацию области RWW 
+ldi spmcrval, A«RWWSRE) | A«SPMEN) 
+call Do_spm 
+rjmp Return 
+Do_spm: /Операция определяется содержимым 
+/spmcrval. Проверить завершение 
+/предыдущей операции 
+Wait_spm: 
+Ids tempi,SPMCR 
+sbrc tempi,SPMEN 
+rjmp Wait_spm 
+-538- 

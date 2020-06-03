@@ -1,0 +1,142 @@
+Глава 13. Таймеры 
+Таблица 2.93. Режимы работы таймеров/счетчиков Т1 и ТЗ 
+Номер 
+режима 
+0 
+1 
+2 
+3 
+4 
+5 
+6 
+7 
+8** 
+9** 
+10** 
+11** 
+12** 
+13** 
+14** 
+15** 
+WGM*3 
+0 
+0 
+0 
+0 
+0 
+0 
+0 
+0 
+1 
+1 
+1 
+1 
+1 
+1 
+1 
+1 
+WGM*2 
+(СТС1)* 
+0 
+0 
+0 
+0 
+1 
+1 
+1 
+1 
+0 
+0 
+0 
+0 
+1 
+1 
+1 
+1 
+WGM/il 
+(PWMll)* 
+0 
+0 
+1 
+1 
+0 
+0 
+1 
+1 
+0 
+0 
+1 
+1 
+0 
+0 
+1 
+1 
+WGMflO 
+(PWM10)* 
+0 
+1 
+0 
+1 
+0 
+1 
+0 
+1 
+0 
+1 
+0 
+1 
+0 
+1 
+0 
+1 
+Режим работы  
+таймера/счетчика Tw 
+Normal 
+Phase correct PWM, 
+8-разрядный 
+Phase correct PWM, 
+9-разрядный 
+Phase correct PWM, 
+10-разрядный 
+CTC (сброс при  
+совпадении) 
+Fast PWM,  
+8-разрядный 
+Fast PWM,  
+9-разрядный 
+Fast PWM,  
+10-разрядный 
+Phase and Frequency 
+Correct PWM 
+Phase and Frequency 
+Correct PWM 
+Phase correct PWM 
+Phase correct PWM 
+CTC (сброс при 
+совпадении) 
+Зарезервировано 
+Fast PWM 
+Fast PWM 
+Модуль 
+счета 
+(TOP) 
+$FFFF 
+$00FF 
+S01FF 
+$03FF 
+OCRM 
+$00FF 
+$01FF 
+$03FF 
+ICRu 
+OCR/iA 
+ICR/i 
+OCR/iA 
+ICR>! 
+- 
+ICR/i 
+OCRajA 
+* В моделях ATmegal61x/163x/323x. 
+** В моделях ATmegal61x/163x/323x эти режимы отсутствуют. 
+Примечание: n = 1 или 3. 
+-289 

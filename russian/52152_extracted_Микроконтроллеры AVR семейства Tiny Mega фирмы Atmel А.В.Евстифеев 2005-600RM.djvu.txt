@@ -1,0 +1,47 @@
+Приложение 2 
+AVR семейства Mega 
+Интерфейсы 
+АЦП 
+AО-разр.) 
+[каналов] 
+Рабочая 
+частота 
+[МП*] 
+Напряжение 
+питания [В] 
+Корпус 
+Тип 
+DIP-28 
+TQFP-32 
+MLF-32 
+DIP-28 
+TQFP-32 
+MLF-32 
+DIP-28 
+TQFP-32 
+MLF-32 
+PLCC-44 
+DIP-28 
+TQFP-32 
+MLF-32 
+PLCC-44 
+DIP-40 
+TQFP-44 
+MLF-44 
+PLCC-44 
+DIP-40 
+TQFP-44 
+MLF-44 
+PLCC-44 
+DIP-40 
+TQFP-44 
+DIP-40 
+TQFP-44 
+DIP-40 
+TQFP-44 
+DIP-40 
+TQFP-44 
+DIP-40 
+TQFP-44 
+MLF-44 
+-545- 
